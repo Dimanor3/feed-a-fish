@@ -28,7 +28,9 @@ export class FishService implements OnDestroy {
         .get(this.url[0] + this.url[1], { responseType: 'text' })
         .pipe(
           catchError(this.handleError),
-          tap((resData) => {})
+          tap((resData) => {
+            console.log(resData);
+          })
         )
         .subscribe((response) => {
           console.log(response);
