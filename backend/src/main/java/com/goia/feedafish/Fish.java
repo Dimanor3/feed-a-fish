@@ -327,6 +327,12 @@ public class Fish {
         } catch (SQLException e) {
             System.out.println("Error retrieving latest fish from database: " + e.getMessage());
         }
+
+        if (fish == null) {
+            fish = generateRandomFish();
+            fish.saveToDatabase(dataSource);
+        }
+
         return fish;
     }
 
