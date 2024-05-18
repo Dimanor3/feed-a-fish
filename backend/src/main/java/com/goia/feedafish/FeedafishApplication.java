@@ -21,7 +21,7 @@ public class FeedafishApplication {
 			try (Connection conn = dataSource.getConnection()) {
 				Statement stmt = conn.createStatement();
 				stmt.execute("CREATE TABLE IF NOT EXISTS fish (" +
-					"id SERIAL PRIMARY KEY, " +
+						"id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
 					"name VARCHAR(255), " +
 					"created_at TIMESTAMP, " +
 					"parent_fish_id INTEGER, " +

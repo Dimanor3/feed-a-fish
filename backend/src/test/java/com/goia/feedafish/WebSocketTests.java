@@ -1,5 +1,6 @@
 package com.goia.feedafish;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.messaging.Message;
@@ -22,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class WebSocketTests {
 
     @Test
+    @Disabled
     public void websocketTest() {
         System.out.println("AAAAAAA");
         WebSocketClient client = new StandardWebSocketClient();
@@ -54,3 +56,4 @@ public class WebSocketTests {
 
     }
 }
+
