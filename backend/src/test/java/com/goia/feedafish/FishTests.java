@@ -40,7 +40,7 @@ public class FishTests {
     @Test
     public void testSaveToDatabase() {
         Fish fish = new Fish(1L, "Goldfish", new Timestamp(System.currentTimeMillis()), null, "base64Image",
-                "imagePath", "{}");
+                "imagePath", "{}", true, 1.0, 0.5, 2.0, 5, 8, 3);
         fish.saveToDatabase(dataSource);
 
         Fish latestFish = Fish.getLatestFish(dataSource);
@@ -51,6 +51,13 @@ public class FishTests {
         assertEquals("imagePath", latestFish.getImagePath(),
                 "The image path of the latest fish should match the one just saved.");
         assertEquals("{}", latestFish.getJson(), "The JSON of the latest fish should match the one just saved.");
+        assertTrue(latestFish.getAlive(), "The fish should be alive.");
+        assertEquals(1.0, latestFish.getWeight(), "The weight of the fish should be 1.0.");
+        assertEquals(0.5, latestFish.getMinWeight(), "The minimum weight of the fish should be 0.5.");
+        assertEquals(2.0, latestFish.getMaxWeight(), "The maximum weight of the fish should be 2.0.");
+        assertEquals(5, latestFish.getCurrentHungerLevel(), "The current hunger level of the fish should be 5.");
+        assertEquals(8, latestFish.getGainWeightHungerLevel(), "The gain weight hunger level of the fish should be 8.");
+        assertEquals(3, latestFish.getLoseWeightHungerLevel(), "The lose weight hunger level of the fish should be 3.");
     }
 
     @Test
@@ -62,6 +69,13 @@ public class FishTests {
         assertNotNull(randomFish.getBase64Image(), "Random fish should have a base64 image.");
         assertNotNull(randomFish.getImagePath(), "Random fish should have an image path.");
         assertNotNull(randomFish.getJson(), "Random fish should have JSON data.");
+        assertTrue(randomFish.getAlive(), "Random fish should be alive.");
+        assertNotNull(randomFish.getWeight(), "Random fish should have a weight.");
+        assertNotNull(randomFish.getMinWeight(), "Random fish should have a minimum weight.");
+        assertNotNull(randomFish.getMaxWeight(), "Random fish should have a maximum weight.");
+        assertNotNull(randomFish.getCurrentHungerLevel(), "Random fish should have a current hunger level.");
+        assertNotNull(randomFish.getGainWeightHungerLevel(), "Random fish should have a gain weight hunger level.");
+        assertNotNull(randomFish.getLoseWeightHungerLevel(), "Random fish should have a lose weight hunger level.");
 
         // Validate the structure of the base64 image string
         assertTrue(randomFish.getBase64Image().startsWith("data:image/png;base64,"),
@@ -75,8 +89,4 @@ public class FishTests {
         assertDoesNotThrow(() -> new JSONObject(randomFish.getJson()),
                 "JSON data should be in a valid JSON format.");
     }
-    
-    
-    
-
 }

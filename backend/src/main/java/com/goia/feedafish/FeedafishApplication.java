@@ -27,7 +27,14 @@ public class FeedafishApplication {
 					"parent_fish_id INTEGER, " +
 					"base64_image TEXT, " +
 					"image_path TEXT, " +
-					"json TEXT" +
+					"json TEXT, " +
+					"alive BOOLEAN DEFAULT TRUE, " +
+					"weight DECIMAL, " +
+					"min_weight DECIMAL, " +
+					"max_weight DECIMAL, " +
+					"current_hunger_level INTEGER, " +
+					"gain_weight_hunger_level INTEGER, " +
+					"lose_weight_hunger_level INTEGER" +
 					")");
 			}
 		};
