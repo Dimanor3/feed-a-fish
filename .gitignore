@@ -6,3 +6,5 @@
 backend/mvnw
 
 frontend/bun.lockb
+
+backend/feedafish.db
