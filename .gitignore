@@ -4,3 +4,5 @@
 .vscode/
 
 backend/mvnw
+
+frontend/bun.lockb
