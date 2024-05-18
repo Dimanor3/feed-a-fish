@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -25,8 +26,8 @@ public class TestController {
         return "Greetings from Spring Boot!";
     }
 
-    @GetMapping("/generate/fish")
-    public Fish generateFishEndpoint(@RequestParam(required = false) String name,
+    @PostMapping(value = "/generate/fish", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> generateFishEndpoint(@RequestParam(required = false) String name,
                                      @RequestParam(required = false) Boolean alive,
                                      @RequestParam(required = false) Double weight,
                                      @RequestParam(required = false) Double minWeight,
@@ -52,46 +53,54 @@ public class TestController {
         if (json != null) newFish.setJson(json);
 
         newFish.saveToDatabase(dataSource);
-        return newFish;
+        return ResponseEntity.ok(newFish.toJson());
     }
-    @GetMapping("/get/latest")
-    public ResponseEntity<Fish> getLatestOrCreateFishEndpoint() {
+
+    @GetMapping(value = "/get/latest", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getLatestOrCreateFishEndpoint() {
         try {
             Fish latestFish = Fish.getLatestFish(dataSource);
             if (latestFish == null) {
                 // If no latest fish exists, generate a new one
                 latestFish = Fish.generateRandomFish();
                 latestFish.saveToDatabase(dataSource);
-                return ResponseEntity.status(HttpStatus.CREATED).body(latestFish);
+                return ResponseEntity.status(HttpStatus.CREATED).body(latestFish.toJson());
             }
-            return ResponseEntity.ok(latestFish);
+            return ResponseEntity.ok(latestFish.toJson());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(null);
+                    .body("{\"error\": \"" + e.getMessage() + "\"}");
         }
     }
 
-    @GetMapping("/list/dead")
-    public List<Fish> getAllDeadFishEndpoint() {
-        return Fish.getAllDeadFish(dataSource);
+    @GetMapping(value = "/get/dead", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getAllDeadFishEndpoint() {
+        try {
+            List<Fish> deadFishList = Fish.getAllDeadFish(dataSource);
+            return ResponseEntity.ok(Fish.listToJson(deadFishList).toString());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"error\": \"" + e.getMessage() + "\"}");
+        }
     }
-    @GetMapping("/feed/latest")
-    public ResponseEntity<Fish> feedLatestFishEndpoint() {
+
+    @GetMapping(value = "/feed/latest", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> feedLatestFishEndpoint() {
         try {
             Fish latestFish = Fish.getLatestFish(dataSource);
             if (latestFish == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(null);
+                        .body("{\"error\": \"No latest fish found\"}");
             }
             if (!latestFish.getAlive()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(null);
+                        .body("{\"error\": \"Latest fish is not alive\"}");
             }
             latestFish.feedFish(dataSource);
-            return ResponseEntity.ok(latestFish);
+            return ResponseEntity.ok(latestFish.toJson());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(null);
+                    .body("{\"error\": \"" + e.getMessage() + "\"}");
         }
     }
 

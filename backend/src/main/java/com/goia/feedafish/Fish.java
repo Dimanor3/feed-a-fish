@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Random;
 import javax.sql.DataSource;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 public class Fish {
     private Long id;
     private String name;
@@ -236,6 +239,12 @@ public class Fish {
     // the database.
     public Fish feedFish(DataSource dataSource) {
         System.out.println("Starting feedFish function for fish ID: " + this);
+        // if (this.id == null) {
+        // System.out.println("Error: Fish ID is null. Cannot feed fish without a valid
+        // ID.");
+        // return this;
+        // }
+
         try (Connection conn = dataSource.getConnection()) {
             // Increment current hunger level
             this.currentHungerLevel -= 1;
@@ -259,8 +268,8 @@ public class Fish {
             }
 
             // Update the fish record in the database using updateInDatabase method
-            this.updateInDatabase(dataSource);
             System.out.println("Fish record updated in the database.");
+            this.updateInDatabase(dataSource);
         } catch (SQLException e) {
             System.out.println("Error updating fish in database: " + e.getMessage());
         }
@@ -331,6 +340,7 @@ public class Fish {
         if (fish == null) {
             fish = generateRandomFish();
             fish.saveToDatabase(dataSource);
+            fish = getLatestFish(dataSource);
         }
 
         return fish;
@@ -485,21 +495,63 @@ public class Fish {
     @Override
     public String toString() {
         return "Fish{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", createdAt=" + createdAt +
-                ", parentFishId=" + parentFishId +
-                ", base64Image='" + base64Image + '\'' +
-                ", imagePath='" + imagePath + '\'' +
-                ", json='" + json + '\'' +
-                ", alive=" + alive +
-                ", weight=" + weight +
-                ", minWeight=" + minWeight +
-                ", maxWeight=" + maxWeight +
-                ", currentHungerLevel=" + currentHungerLevel +
-                ", gainWeightHungerLevel=" + gainWeightHungerLevel +
-                ", loseWeightHungerLevel=" + loseWeightHungerLevel +
+                "id=" + (id != null ? id : "null") +
+                ", name='" + (name != null ? name : "null") + '\'' +
+                ", createdAt=" + (createdAt != null ? createdAt : "null") +
+                ", parentFishId=" + (parentFishId != null ? parentFishId : "null") +
+                ", base64Image='" + (base64Image != null ? base64Image : "null") + '\'' +
+                ", imagePath='" + (imagePath != null ? imagePath : "null") + '\'' +
+                ", json='" + (json != null ? json : "null") + '\'' +
+                ", alive=" + (alive != null ? alive : "null") +
+                ", weight=" + (weight != null ? weight : "null") +
+                ", minWeight=" + (minWeight != null ? minWeight : "null") +
+                ", maxWeight=" + (maxWeight != null ? maxWeight : "null") +
+                ", currentHungerLevel=" + (currentHungerLevel != null ? currentHungerLevel : "null") +
+                ", gainWeightHungerLevel=" + (gainWeightHungerLevel != null ? gainWeightHungerLevel : "null") +
+                ", loseWeightHungerLevel=" + (loseWeightHungerLevel != null ? loseWeightHungerLevel : "null") +
                 '}';
+    }
+
+    public String toJson() {
+        return "{" +
+                "\"id\":" + (id != null ? id : "null") +
+                ", \"name\":\"" + (name != null ? name : "null") + "\"" +
+                ", \"createdAt\":\"" + (createdAt != null ? createdAt : "null") + "\"" +
+                ", \"parentFishId\":" + (parentFishId != null ? parentFishId : "null") +
+                ", \"base64Image\":\"" + (base64Image != null ? base64Image : "null") + "\"" +
+                ", \"imagePath\":\"" + (imagePath != null ? imagePath : "null") + "\"" +
+                ", \"json\":\"" + (json != null ? json : "null") + "\"" +
+                ", \"alive\":" + (alive != null ? alive : "null") +
+                ", \"weight\":" + (weight != null ? weight : "null") +
+                ", \"minWeight\":" + (minWeight != null ? minWeight : "null") +
+                ", \"maxWeight\":" + (maxWeight != null ? maxWeight : "null") +
+                ", \"currentHungerLevel\":" + (currentHungerLevel != null ? currentHungerLevel : "null") +
+                ", \"gainWeightHungerLevel\":" + (gainWeightHungerLevel != null ? gainWeightHungerLevel : "null") +
+                ", \"loseWeightHungerLevel\":" + (loseWeightHungerLevel != null ? loseWeightHungerLevel : "null") +
+                '}';
+    }
+
+    public static Object listToJson(List<Fish> deadFishList) {
+        JSONArray jsonArray = new JSONArray();
+        for (Fish fish : deadFishList) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("id", fish.getId());
+            jsonObject.put("name", fish.getName());
+            jsonObject.put("createdAt", fish.getCreatedAt().toString());
+            jsonObject.put("parentFishId", fish.getParentFishId());
+            jsonObject.put("base64Image", fish.getBase64Image());
+            jsonObject.put("imagePath", fish.getImagePath());
+            jsonObject.put("json", fish.getJson());
+            jsonObject.put("alive", fish.getAlive());
+            jsonObject.put("weight", fish.getWeight());
+            jsonObject.put("minWeight", fish.getMinWeight());
+            jsonObject.put("maxWeight", fish.getMaxWeight());
+            jsonObject.put("currentHungerLevel", fish.getCurrentHungerLevel());
+            jsonObject.put("gainWeightHungerLevel", fish.getGainWeightHungerLevel());
+            jsonObject.put("loseWeightHungerLevel", fish.getLoseWeightHungerLevel());
+            jsonArray.put(jsonObject);
+        }
+        return jsonArray.toString();
     }
 
 }

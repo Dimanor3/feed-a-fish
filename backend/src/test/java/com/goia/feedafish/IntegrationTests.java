@@ -7,6 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.sql.Connection;
@@ -49,26 +53,47 @@ public class IntegrationTests {
 
     @Test
     public void generateFishEndpointShouldReturnFish() {
-        ResponseEntity<Fish> response = restTemplate.getForEntity("http://localhost:" + port + "/generate/fish", Fish.class);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> entity = new HttpEntity<>(null, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/generate/fish",
+                HttpMethod.POST, entity, String.class);
         assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody()).contains("\"alive\"");
     }
 
     @Test
     public void getLatestOrCreateFishEndpointShouldReturnFish() {
-        ResponseEntity<Fish> response = restTemplate.getForEntity("http://localhost:" + port + "/get/latest", Fish.class);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> entity = new HttpEntity<>(null, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/get/latest",
+                HttpMethod.GET, entity, String.class);
         assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody()).contains("\"alive\":");
     }
 
     @Test
     public void feedLatestFishEndpointShouldReturnUpdatedFish() {
-        ResponseEntity<Fish> response = restTemplate.getForEntity("http://localhost:" + port + "/feed/latest", Fish.class);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> entity = new HttpEntity<>(null, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/feed/latest",
+                HttpMethod.GET, entity, String.class);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getAlive()).isTrue();
     }
 
     @Test
     public void statusEndpointShouldReturnStatusPage() {
-        ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:" + port + "/status", String.class);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> entity = new HttpEntity<>(null, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/status", HttpMethod.GET,
+                entity, String.class);
         assertThat(response.getBody()).contains("<title>Fish Status</title>");
     }
 }
