@@ -25,7 +25,7 @@ export class FishService implements OnDestroy {
     // if (hours === 11 && minutes === 11) {
     if (true) {
       this.getFishSub = this.http
-        .get(this.url[0] + this.url[1], { responseType: 'json' })
+        .get(this.url[0] + this.url[1], { responseType: 'text' })
         .pipe(
           catchError(this.handleError),
           tap((resData) => {})
