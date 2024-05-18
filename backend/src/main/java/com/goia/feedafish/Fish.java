@@ -5,6 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Base64;
+import java.util.Random;
+import java.util.UUID;
 
 import javax.sql.DataSource;
 
@@ -127,6 +130,34 @@ public class Fish {
         } catch (SQLException e) {
             System.out.println("Error retrieving latest fish from database: " + e.getMessage());
         }
+        return fish;
+    }
+
+    public static Fish generateRandomFish() {
+        Fish fish = new Fish();
+        Random random = new Random();
+
+        // Generate random name
+        String[] names = {"Goldie", "Nemo", "Dory", "Bubbles", "Splash", "Finny"};
+        fish.setName(names[random.nextInt(names.length)]);
+
+        // Set current timestamp as created_at
+        fish.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+
+        // Randomly assign a parent fish ID or null
+        fish.setParentFishId(random.nextBoolean() ? null : random.nextInt(100) + 1);
+
+        // Generate random base64 image string (mock)
+        fish.setBase64Image("data:image/png;base64," + Base64.getEncoder().encodeToString(new byte[20]));
+
+        // Generate random image path
+        fish.setImagePath("/images/" + UUID.randomUUID().toString() + ".png");
+
+        // Generate random JSON data
+        String json = String.format("{\"mood\":\"%s\",\"age\":%d}", 
+            random.nextBoolean() ? "happy" : "sad", random.nextInt(10) + 1);
+        fish.setJson(json);
+
         return fish;
     }
 }
