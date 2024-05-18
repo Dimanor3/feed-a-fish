@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription, fromEvent } from 'rxjs';
 import { throttleTime, map } from 'rxjs/operators';
+import { FishService } from '../shared/fish.service';
 
 @Component({
   selector: 'app-fish-tank',
@@ -10,7 +11,7 @@ import { throttleTime, map } from 'rxjs/operators';
   templateUrl: './fish-tank.component.html',
   styleUrl: './fish-tank.component.css',
 })
-export class FishTankComponent implements OnInit {
+export class FishTankComponent implements OnInit, OnDestroy {
   fishStyle: any = {
     position: 'absolute',
     transform: 'rotate(0deg)',
@@ -22,6 +23,8 @@ export class FishTankComponent implements OnInit {
   mousePosY = -1;
 
   private mousePosSubscription: Subscription = null as any;
+
+  constructor(private fishService: FishService) {}
 
   ngOnInit(): void {
     this.mousePosSubscription = fromEvent<MouseEvent>(document, 'mousemove')
@@ -35,6 +38,8 @@ export class FishTankComponent implements OnInit {
 
         this.moveFish();
       });
+
+    this.fishService.getFish();
   }
 
   moveFish(): void {
@@ -83,5 +88,9 @@ export class FishTankComponent implements OnInit {
       left: `${x - rect.width / 2}px`,
       top: `${y - rect.height / 2}px`,
     };
+  }
+
+  ngOnDestroy(): void {
+    this.mousePosSubscription.unsubscribe();
   }
 }
