@@ -26,10 +26,10 @@ export class FishService implements OnDestroy {
     if (true) {
       this.getFishSub = this.http
         .get(this.url[0] + this.url[1], { responseType: 'json' })
-        // .pipe(
-        //   catchError(this.handleError),
-        //   tap((resData) => {})
-        // )
+        .pipe(
+          catchError(this.handleError),
+          tap((resData) => {})
+        )
         .subscribe((response) => {
           console.log(response);
         });
