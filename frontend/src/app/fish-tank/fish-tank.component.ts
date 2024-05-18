@@ -1,5 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { Subscription, fromEvent } from 'rxjs';
+import { throttleTime, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-fish-tank',
@@ -16,12 +18,36 @@ export class FishTankComponent implements OnInit {
     top: '0px',
     transition: 'transform 2s, left 2s, top 2s',
   };
+  mousePosX = -1;
+  mousePosY = -1;
+
+  private mousePosSubscription: Subscription = null as any;
 
   ngOnInit(): void {
-    this.moveFish();
+    this.mousePosSubscription = fromEvent<MouseEvent>(document, 'mousemove')
+      .pipe(
+        throttleTime(100),
+        map((event: MouseEvent) => ({ x: event.clientX, y: event.clientY }))
+      )
+      .subscribe((e) => {
+        this.mousePosX = e.x;
+        this.mousePosY = e.y;
+
+        this.moveFish();
+      });
   }
 
   moveFish(): void {
+    const fish = document.getElementById('fish');
+    if (fish) {
+      // this.moveFishTo(randomX, randomY);
+
+      fish.style.left = this.mousePosX + 'px';
+      fish.style.top = this.mousePosY + 'px';
+    }
+  }
+
+  moveFishInterval(): void {
     setInterval(() => {
       const fish = document.getElementById('fish');
       if (fish) {
