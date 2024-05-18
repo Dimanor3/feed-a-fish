@@ -5,7 +5,11 @@ import { throwError } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class FishService {
-  private url: string[] = ['localhost:8081/', 'get/latest', 'list/dead'];
+  private url: string[] = [
+    'bijanrazavi.com/feed-a-fish/api/',
+    'get/latest',
+    'list/dead',
+  ];
 
   constructor(private http: HttpClient) {}
 
@@ -37,19 +41,6 @@ export class FishService {
     if (!errorRes.error || !errorRes.error.error) {
       return throwError(errorRes);
     }
-
-    // switch(errorRes.error.error.message) {
-    //     case 'EMAIL_EXISTS':
-    //         errorMessage = "This error exists already!";
-    //     case 'EMAIL_NOT_FOUND':
-    //         errorMessage = "This email does not exist!";
-    //     case 'INVALID_PASSWORD':
-    //         errorMessage = "This password is not correct!";
-    //     case "INVALID_LOGIN_CREDENTIALS":
-    //         errorMessage = "Invalid login credentials!";
-    // case 'Permission denied':
-    //     errorMessage = "Permission denied!";
-    // }
 
     return throwError(errorRes);
   }
