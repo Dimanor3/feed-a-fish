@@ -39,7 +39,7 @@ export class FishTankComponent implements OnInit, OnDestroy {
         this.moveFish();
       });
 
-    this.fishService.generateFish();
+    this.fishService.getFish();
   }
 
   moveFish(): void {
