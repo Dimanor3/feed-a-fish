@@ -55,6 +55,7 @@ export class FishTankComponent implements OnInit, OnDestroy {
 
   moveFish(): void {
     const fish = document.getElementById('fish');
+
     if (fish) {
       // this.moveFishTo(randomX, randomY);
 
@@ -103,5 +104,6 @@ export class FishTankComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.mousePosSubscription.unsubscribe();
+    this.fishSub.unsubscribe();
   }
 }
