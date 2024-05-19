@@ -240,7 +240,7 @@ public class Fish {
 
     public void saveToDatabase(DataSource dataSource) {
         try (Connection conn = dataSource.getConnection()) {
-            String sql = "INSERT INTO fish (name, created_at, parent_fish_id, base64_image, image_path, mood, age, alive, weight, min_weight, max_weight, current_hunger_level, gain_weight_hunger_level, lose_weight_hunger_level) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO fish (name, created_at, parent_fish_id, base64_image, image_path, mood, age, alive, weight, min_weight, max_weight, current_hunger_level, gain_weight_hunger_level, lose_weight_hunger_level) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setString(1, this.name);
                 pstmt.setTimestamp(2, this.createdAt);
