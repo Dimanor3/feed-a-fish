@@ -6,14 +6,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.sql.DataSource;
 
-import groovy.transform.Synchronized;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -21,18 +19,18 @@ public class Fish {
     private Long id;
     private String name;
     private Timestamp createdAt;
-    private Integer parentFishId;
+    private int parentFishId;
     private String base64Image;
     private String imagePath;
     private String mood;
-    private Integer age;
-    private Boolean alive;
-    private Double weight;
-    private Double minWeight;
-    private Double maxWeight;
-    private Integer currentHungerLevel;
-    private Integer gainWeightHungerLevel;
-    private Integer loseWeightHungerLevel;
+    private int age;
+    private boolean alive;
+    private double weight;
+    private double minWeight;
+    private double maxWeight;
+    private int currentHungerLevel;
+    private int gainWeightHungerLevel;
+    private int loseWeightHungerLevel;
     private static final ReadWriteLock latestFishLock = new ReentrantReadWriteLock();
 
     public Fish() {
@@ -62,7 +60,7 @@ public class Fish {
         this.setId(rs.getLong("id"));
         this.setName(rs.getString("name"));
         this.setCreatedAt(rs.getTimestamp("created_at"));
-        this.setParentFishId(rs.getObject("parent_fish_id") != null ? rs.getInt("parent_fish_id") : null);
+        this.setParentFishId(rs.getInt("parent_fish_id"));
         this.setBase64Image(rs.getString("base64_image"));
         this.setImagePath(rs.getString("image_path"));
         this.setMood(rs.getString("mood"));
@@ -101,11 +99,11 @@ public class Fish {
         this.createdAt = createdAt;
     }
 
-    public Integer getParentFishId() {
+    public int getParentFishId() {
         return parentFishId;
     }
 
-    public void setParentFishId(Integer parentFishId) {
+    public void setParentFishId(int parentFishId) {
         this.parentFishId = parentFishId;
     }
 
@@ -133,67 +131,67 @@ public class Fish {
         this.mood = mood;
     }
 
-    public Integer getAge() {
+    public int getAge() {
         return age;
     }
 
-    public void setAge(Integer age) {
+    public void setAge(int age) {
         this.age = age;
     }
 
-    public Boolean getAlive() {
+    public boolean getAlive() {
         return alive;
     }
 
-    public void setAlive(Boolean alive) {
+    public void setAlive(boolean alive) {
         this.alive = alive;
     }
 
-    public Double getWeight() {
+    public double getWeight() {
         return weight;
     }
 
-    public void setWeight(Double weight) {
+    public void setWeight(double weight) {
         this.weight = weight;
     }
 
-    public Double getMinWeight() {
+    public double getMinWeight() {
         return minWeight;
     }
 
-    public void setMinWeight(Double minWeight) {
+    public void setMinWeight(double minWeight) {
         this.minWeight = minWeight;
     }
 
-    public Double getMaxWeight() {
+    public double getMaxWeight() {
         return maxWeight;
     }
 
-    public void setMaxWeight(Double maxWeight) {
+    public void setMaxWeight(double maxWeight) {
         this.maxWeight = maxWeight;
     }
 
-    public Integer getCurrentHungerLevel() {
+    public int getCurrentHungerLevel() {
         return currentHungerLevel;
     }
 
-    public void setCurrentHungerLevel(Integer currentHungerLevel) {
+    public void setCurrentHungerLevel(int currentHungerLevel) {
         this.currentHungerLevel = currentHungerLevel;
     }
 
-    public Integer getGainWeightHungerLevel() {
+    public int getGainWeightHungerLevel() {
         return gainWeightHungerLevel;
     }
 
-    public void setGainWeightHungerLevel(Integer gainWeightHungerLevel) {
+    public void setGainWeightHungerLevel(int gainWeightHungerLevel) {
         this.gainWeightHungerLevel = gainWeightHungerLevel;
     }
 
-    public Integer getLoseWeightHungerLevel() {
+    public int getLoseWeightHungerLevel() {
         return loseWeightHungerLevel;
     }
 
-    public void setLoseWeightHungerLevel(Integer loseWeightHungerLevel) {
+    public void setLoseWeightHungerLevel(int loseWeightHungerLevel) {
         this.loseWeightHungerLevel = loseWeightHungerLevel;
     }
 
@@ -204,11 +202,7 @@ public class Fish {
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setString(1, this.name);
                 pstmt.setTimestamp(2, this.createdAt);
-                if (this.parentFishId == null) {
-                    pstmt.setNull(3, java.sql.Types.INTEGER);
-                } else {
-                    pstmt.setInt(3, this.parentFishId);
-                }
+                pstmt.setInt(3, this.parentFishId);
                 pstmt.setString(4, this.base64Image);
                 pstmt.setString(5, this.imagePath);
                 pstmt.setString(6, this.mood);
@@ -244,11 +238,7 @@ public class Fish {
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setString(1, this.name);
                 pstmt.setTimestamp(2, this.createdAt);
-                if (this.parentFishId == null) {
-                    pstmt.setNull(3, java.sql.Types.INTEGER);
-                } else {
-                    pstmt.setInt(3, this.parentFishId);
-                }
+                pstmt.setInt(3, this.parentFishId);
                 pstmt.setString(4, this.base64Image);
                 pstmt.setString(5, this.imagePath);
                 pstmt.setString(6, this.mood);
@@ -461,7 +451,7 @@ public class Fish {
         fish.setCreatedAt(new Timestamp(System.currentTimeMillis()));
 
         // Randomly assign a parent fish ID or null
-        fish.setParentFishId(random.nextBoolean() ? null : random.nextInt(100) + 1);
+        fish.setParentFishId(random.nextBoolean() ? 0 : random.nextInt(100) + 1);
 
         // Generate random base64 image string (mock)
         // fish.setBase64Image("data:image/png;base64," +
@@ -508,18 +498,18 @@ public class Fish {
                 "id=" + (id != null ? id : "null") +
                 ", name='" + (name != null ? name : "null") + '\'' +
                 ", createdAt=" + (createdAt != null ? createdAt : "null") +
-                ", parentFishId=" + (parentFishId != null ? parentFishId : "null") +
+                ", parentFishId=" + (parentFishId) +
                 ", base64Image='" + (base64Image != null ? base64Image : "null") + '\'' +
                 ", imagePath='" + (imagePath != null ? imagePath : "null") + '\'' +
                 ", mood='" + (mood != null ? mood : "null") + '\'' +
-                ", age='" + (age != null ? age : "null") + '\'' +
-                ", alive=" + (alive != null ? alive : "null") +
-                ", weight=" + (weight != null ? weight : "null") +
-                ", minWeight=" + (minWeight != null ? minWeight : "null") +
-                ", maxWeight=" + (maxWeight != null ? maxWeight : "null") +
-                ", currentHungerLevel=" + (currentHungerLevel != null ? currentHungerLevel : "null") +
-                ", gainWeightHungerLevel=" + (gainWeightHungerLevel != null ? gainWeightHungerLevel : "null") +
-                ", loseWeightHungerLevel=" + (loseWeightHungerLevel != null ? loseWeightHungerLevel : "null") +
+                ", age='" + (age) + '\'' +
+                ", alive=" + (alive) +
+                ", weight=" + (weight) +
+                ", minWeight=" + (minWeight) +
+                ", maxWeight=" + (maxWeight) +
+                ", currentHungerLevel=" + (currentHungerLevel) +
+                ", gainWeightHungerLevel=" + (gainWeightHungerLevel) +
+                ", loseWeightHungerLevel=" + (loseWeightHungerLevel) +
                 '}';
     }
 
@@ -528,18 +518,18 @@ public class Fish {
                 "\"id\":" + (id != null ? id : "null") +
                 ", \"name\":\"" + (name != null ? name : "null") + "\"" +
                 ", \"createdAt\":\"" + (createdAt != null ? createdAt : "null") + "\"" +
-                ", \"parentFishId\":" + (parentFishId != null ? parentFishId : "null") +
+                ", \"parentFishId\":" + (parentFishId != 0 ? parentFishId : "null") +
                 ", \"base64Image\":\"" + (base64Image != null ? base64Image : "null") + "\"" +
                 ", \"imagePath\":\"" + (imagePath != null ? imagePath : "null") + "\"" +
                 ", \"mood\":\"" + (mood != null ? mood : "null") + "\"" +
-                ", \"age\":\"" + (age != null ? age : "null") + "\"" +
-                ", \"alive\":" + (alive != null ? alive : "null") +
-                ", \"weight\":" + (weight != null ? weight : "null") +
-                ", \"minWeight\":" + (minWeight != null ? minWeight : "null") +
-                ", \"maxWeight\":" + (maxWeight != null ? maxWeight : "null") +
-                ", \"currentHungerLevel\":" + (currentHungerLevel != null ? currentHungerLevel : "null") +
-                ", \"gainWeightHungerLevel\":" + (gainWeightHungerLevel != null ? gainWeightHungerLevel : "null") +
-                ", \"loseWeightHungerLevel\":" + (loseWeightHungerLevel != null ? loseWeightHungerLevel : "null") +
+                ", \"age\":\"" + (age) + "\"" +
+                ", \"alive\":" + (alive) +
+                ", \"weight\":" + (weight) +
+                ", \"minWeight\":" + (minWeight) +
+                ", \"maxWeight\":" + (maxWeight) +
+                ", \"currentHungerLevel\":" + (currentHungerLevel) +
+                ", \"gainWeightHungerLevel\":" + (gainWeightHungerLevel) +
+                ", \"loseWeightHungerLevel\":" + (loseWeightHungerLevel) +
                 '}';
     }
 

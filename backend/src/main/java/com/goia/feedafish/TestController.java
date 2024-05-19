@@ -1,15 +1,11 @@
 package com.goia.feedafish;
 
-import java.sql.Connection;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
-import java.util.TimeZone;
 
 import javax.sql.DataSource;
 
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -60,6 +56,8 @@ public class TestController {
         if (imagePath != null) newFish.setImagePath(imagePath);
         if (mood != null) newFish.setMood(mood);
         if (age != null) newFish.setAge(age);
+
+        newFish.setParentFishId(0);
 
 
         newFish.saveToDatabase(dataSource);
