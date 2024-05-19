@@ -1,4 +1,4 @@
-<div id="fish">
+<div id="fish" [ngStyle]="fishStyle" style="position: absolute; transition: transform 5s, left 5s, top 5s;">
     <p>{{ fish.name }}</p>
-    <img [src]="fish.imagePath" [ngStyle]="fishStyle" style="position: absolute; transition: transform 5s, left 5s, top 5s;">
+    <img [src]="fish.imagePath">
 </div>
