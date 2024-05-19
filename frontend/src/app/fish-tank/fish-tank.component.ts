@@ -42,6 +42,7 @@ export class FishTankComponent implements OnInit, OnDestroy {
       });
 
     this.fish = this.fishService.getFish();
+    console.log(this.fish.imagePath);
   }
 
   moveFish(): void {
