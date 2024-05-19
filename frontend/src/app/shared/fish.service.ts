@@ -75,7 +75,7 @@ export class FishService implements OnDestroy {
           );
         });
 
-      console.log(this.fish);
+      return this.fish;
     }
   }
 

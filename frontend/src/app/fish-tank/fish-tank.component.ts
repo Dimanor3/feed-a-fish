@@ -3,6 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription, fromEvent } from 'rxjs';
 import { throttleTime, map } from 'rxjs/operators';
 import { FishService } from '../shared/fish.service';
+import { FishStatus } from '../shared/fish-status.model';
 
 @Component({
   selector: 'app-fish-tank',
@@ -21,6 +22,7 @@ export class FishTankComponent implements OnInit, OnDestroy {
   };
   mousePosX = -1;
   mousePosY = -1;
+  fish: FishStatus = null as any;
 
   private mousePosSubscription: Subscription = null as any;
 
@@ -39,7 +41,7 @@ export class FishTankComponent implements OnInit, OnDestroy {
         this.moveFish();
       });
 
-    this.fishService.getFish();
+    this.fish = this.fishService.getFish();
   }
 
   moveFish(): void {
