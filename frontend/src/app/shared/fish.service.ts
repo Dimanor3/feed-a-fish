@@ -46,7 +46,7 @@ export class FishService implements OnDestroy {
     // if (hours === 11 && minutes === 11) {
     if (true) {
       this.getFishSub = this.http
-        .get<Fish>(this.url[0] + this.url[1], { responseType: 'json' })
+        .get(this.url[0] + this.url[1], { responseType: 'text' })
         .pipe(
           catchError(this.handleError),
           tap((resData) => {
@@ -54,23 +54,25 @@ export class FishService implements OnDestroy {
           })
         )
         .subscribe((response) => {
-          const createdAt: Date = new Date(response.createdAt);
-          const imagePath: String = this.url[0] + response.imagePath;
+          const res: Fish = JSON.parse(response);
+
+          const createdAt: Date = new Date(res.createdAt);
+          const imagePath: String = this.url[0] + res.imagePath;
 
           this.fish = new FishStatus(
-            response.id,
-            response.name,
+            res.id,
+            res.name,
             createdAt,
-            response.parentFishId,
+            res.parentFishId,
             imagePath,
-            response.json,
-            response.alive,
-            response.weight,
-            response.minWeight,
-            response.maxWeight,
-            response.currentHungerLevel,
-            response.gainWeightHungerLevel,
-            response.loseWeightHungerLevel
+            res.json,
+            res.alive,
+            res.weight,
+            res.minWeight,
+            res.maxWeight,
+            res.currentHungerLevel,
+            res.gainWeightHungerLevel,
+            res.loseWeightHungerLevel
           );
         });
 
