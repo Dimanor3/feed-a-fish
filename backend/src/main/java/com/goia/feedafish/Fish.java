@@ -1,14 +1,15 @@
 package com.goia.feedafish;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.sql.DataSource;
@@ -33,6 +34,8 @@ public class Fish {
     private Integer gainWeightHungerLevel;
     private Integer loseWeightHungerLevel;
     private static final ReadWriteLock latestFishLock = new ReentrantReadWriteLock();
+
+    ObjectMapper objectMapper = new ObjectMapper();
 
     public Fish() {
     }
@@ -457,9 +460,9 @@ public class Fish {
         // Generate random image path
         fish.setImagePath(possibleImagePaths[random.nextInt(possibleImagePaths.length)]);
 
+
         // Generate random JSON data
-        String json = String.format("{\\\"mood\\\":\\\"%s\\\",\\\"age\\\":%d}",
-                random.nextBoolean() ? "happy" : "sad", random.nextInt(10) + 1);
+        String json = fish.genFishDesc();
 
         fish.setJson(json);
 
@@ -473,6 +476,21 @@ public class Fish {
         fish.setLoseWeightHungerLevel(12);
 
         return fish;
+    }
+
+    public String genFishDesc() {
+        Random random = new Random();
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("mood", random.nextBoolean() ? "happy" : "sad");
+        data.put("age", random.nextInt(10) + 1);
+
+        try {
+            return objectMapper.writeValueAsString(data);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "{}"; // Return empty JSON object in case of error
+        }
     }
 
     public static List<Fish> getAllFish(DataSource dataSource) {
