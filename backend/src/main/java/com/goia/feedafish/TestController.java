@@ -73,7 +73,7 @@ public class TestController {
                     return ResponseEntity.status(HttpStatus.CREATED).body(latestFish.toJson());
                 }
             }
-            return ResponseEntity.ok(latestFish.toJson());
+            return ResponseEntity.ok(latestFish != null ? latestFish.toJson() : "{}");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("{\"error\": \"" + e.getMessage() + "\"}");

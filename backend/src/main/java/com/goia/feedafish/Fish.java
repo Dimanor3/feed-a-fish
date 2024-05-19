@@ -338,9 +338,10 @@ public class Fish {
         }
 
         if (fish == null) {
-            fish = generateRandomFish();
-            fish.saveToDatabase(dataSource);
-            fish = getLatestFish(dataSource);
+            // We only make the fish at certain times
+            //fish = generateRandomFish();
+            //fish.saveToDatabase(dataSource);
+            //fish = getLatestFish(dataSource);
         }
 
         return fish;
