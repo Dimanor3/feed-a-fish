@@ -1,15 +1,14 @@
 package com.goia.feedafish;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.*;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
+import java.util.Random;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.sql.DataSource;
@@ -25,7 +24,8 @@ public class Fish {
     private Integer parentFishId;
     private String base64Image;
     private String imagePath;
-    private String json;
+    private String mood;
+    private Integer age;
     private Boolean alive;
     private Double weight;
     private Double minWeight;
@@ -35,13 +35,11 @@ public class Fish {
     private Integer loseWeightHungerLevel;
     private static final ReadWriteLock latestFishLock = new ReentrantReadWriteLock();
 
-    ObjectMapper objectMapper = new ObjectMapper();
-
     public Fish() {
     }
 
     public Fish(Long id, String name, Timestamp createdAt, Integer parentFishId, String base64Image, String imagePath,
-                String json, Boolean alive, Double weight, Double minWeight, Double maxWeight, Integer currentHungerLevel,
+                String mood, Integer age, Boolean alive, Double weight, Double minWeight, Double maxWeight, Integer currentHungerLevel,
                 Integer gainWeightHungerLevel, Integer loseWeightHungerLevel) {
         this.id = id;
         this.name = name;
@@ -49,7 +47,8 @@ public class Fish {
         this.parentFishId = parentFishId;
         this.base64Image = base64Image;
         this.imagePath = imagePath;
-        this.json = json;
+        this.mood = mood;
+        this.age = age;
         this.alive = alive;
         this.weight = weight;
         this.minWeight = minWeight;
@@ -66,7 +65,8 @@ public class Fish {
         this.setParentFishId(rs.getObject("parent_fish_id") != null ? rs.getInt("parent_fish_id") : null);
         this.setBase64Image(rs.getString("base64_image"));
         this.setImagePath(rs.getString("image_path"));
-        this.setJson(rs.getString("json"));
+        this.setMood(rs.getString("mood"));
+        this.setAge(rs.getInt("age"));
         this.setAlive(rs.getBoolean("alive"));
         this.setWeight(rs.getDouble("weight"));
         this.setMinWeight(rs.getDouble("min_weight"));
@@ -125,12 +125,20 @@ public class Fish {
         this.imagePath = imagePath;
     }
 
-    public String getJson() {
-        return json;
+    public String getMood() {
+        return mood;
     }
 
-    public void setJson(String json) {
-        this.json = json;
+    public void setMood(String mood) {
+        this.mood = mood;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
     }
 
     public Boolean getAlive() {
@@ -192,7 +200,7 @@ public class Fish {
     public void updateInDatabase(DataSource dataSource) {
         try (Connection conn = dataSource.getConnection()) {
             conn.setAutoCommit(false); // Ensure transaction management
-            String sql = "UPDATE fish SET name = ?, created_at = ?, parent_fish_id = ?, base64_image = ?, image_path = ?, json = ?, alive = ?, weight = ?, min_weight = ?, max_weight = ?, current_hunger_level = ?, gain_weight_hunger_level = ?, lose_weight_hunger_level = ? WHERE id = ?";
+            String sql = "UPDATE fish SET name = ?, created_at = ?, parent_fish_id = ?, base64_image = ?, image_path = ?, mood = ?, age = ?, alive = ?, weight = ?, min_weight = ?, max_weight = ?, current_hunger_level = ?, gain_weight_hunger_level = ?, lose_weight_hunger_level = ? WHERE id = ?";
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setString(1, this.name);
                 pstmt.setTimestamp(2, this.createdAt);
@@ -203,15 +211,16 @@ public class Fish {
                 }
                 pstmt.setString(4, this.base64Image);
                 pstmt.setString(5, this.imagePath);
-                pstmt.setString(6, this.json);
-                pstmt.setBoolean(7, this.alive);
-                pstmt.setDouble(8, this.weight);
-                pstmt.setDouble(9, this.minWeight);
-                pstmt.setDouble(10, this.maxWeight);
-                pstmt.setInt(11, this.currentHungerLevel);
-                pstmt.setInt(12, this.gainWeightHungerLevel);
-                pstmt.setInt(13, this.loseWeightHungerLevel);
-                pstmt.setLong(14, this.id);
+                pstmt.setString(6, this.mood);
+                pstmt.setInt(7, this.age);
+                pstmt.setBoolean(8, this.alive);
+                pstmt.setDouble(9, this.weight);
+                pstmt.setDouble(10, this.minWeight);
+                pstmt.setDouble(11, this.maxWeight);
+                pstmt.setInt(12, this.currentHungerLevel);
+                pstmt.setInt(13, this.gainWeightHungerLevel);
+                pstmt.setInt(14, this.loseWeightHungerLevel);
+                pstmt.setLong(15, this.id);
 
                 int rowsAffected = pstmt.executeUpdate();
                 if (rowsAffected == 0) {
@@ -231,7 +240,7 @@ public class Fish {
 
     public void saveToDatabase(DataSource dataSource) {
         try (Connection conn = dataSource.getConnection()) {
-            String sql = "INSERT INTO fish (name, created_at, parent_fish_id, base64_image, image_path, json, alive, weight, min_weight, max_weight, current_hunger_level, gain_weight_hunger_level, lose_weight_hunger_level) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO fish (name, created_at, parent_fish_id, base64_image, image_path, mood, age, alive, weight, min_weight, max_weight, current_hunger_level, gain_weight_hunger_level, lose_weight_hunger_level) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setString(1, this.name);
                 pstmt.setTimestamp(2, this.createdAt);
@@ -242,14 +251,15 @@ public class Fish {
                 }
                 pstmt.setString(4, this.base64Image);
                 pstmt.setString(5, this.imagePath);
-                pstmt.setString(6, this.json);
-                pstmt.setBoolean(7, this.alive);
-                pstmt.setDouble(8, this.weight);
-                pstmt.setDouble(9, this.minWeight);
-                pstmt.setDouble(10, this.maxWeight);
-                pstmt.setInt(11, this.currentHungerLevel);
-                pstmt.setInt(12, this.gainWeightHungerLevel);
-                pstmt.setInt(13, this.loseWeightHungerLevel);
+                pstmt.setString(6, this.mood);
+                pstmt.setInt(7, this.age);
+                pstmt.setBoolean(8, this.alive);
+                pstmt.setDouble(9, this.weight);
+                pstmt.setDouble(10, this.minWeight);
+                pstmt.setDouble(11, this.maxWeight);
+                pstmt.setInt(12, this.currentHungerLevel);
+                pstmt.setInt(13, this.gainWeightHungerLevel);
+                pstmt.setInt(14, this.loseWeightHungerLevel);
                 pstmt.executeUpdate();
             }
         } catch (SQLException e) {
@@ -460,11 +470,9 @@ public class Fish {
         // Generate random image path
         fish.setImagePath(possibleImagePaths[random.nextInt(possibleImagePaths.length)]);
 
-
         // Generate random JSON data
-        String json = fish.genFishDesc();
-
-        fish.setJson(json);
+        fish.setMood(random.nextBoolean() ? "happy" : "sad");
+        fish.setAge(random.nextInt(10) + 1);
 
         // Set default values for new fields
         fish.setAlive(true);
@@ -476,21 +484,6 @@ public class Fish {
         fish.setLoseWeightHungerLevel(12);
 
         return fish;
-    }
-
-    public String genFishDesc() {
-        Random random = new Random();
-
-        Map<String, Object> data = new HashMap<>();
-        data.put("mood", random.nextBoolean() ? "happy" : "sad");
-        data.put("age", random.nextInt(10) + 1);
-
-        try {
-            return objectMapper.writeValueAsString(data);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "{}"; // Return empty JSON object in case of error
-        }
     }
 
     public static List<Fish> getAllFish(DataSource dataSource) {
@@ -518,7 +511,8 @@ public class Fish {
                 ", parentFishId=" + (parentFishId != null ? parentFishId : "null") +
                 ", base64Image='" + (base64Image != null ? base64Image : "null") + '\'' +
                 ", imagePath='" + (imagePath != null ? imagePath : "null") + '\'' +
-                ", json='" + (json != null ? json : "null") + '\'' +
+                ", mood='" + (mood != null ? mood : "null") + '\'' +
+                ", age='" + (age != null ? age : "null") + '\'' +
                 ", alive=" + (alive != null ? alive : "null") +
                 ", weight=" + (weight != null ? weight : "null") +
                 ", minWeight=" + (minWeight != null ? minWeight : "null") +
@@ -537,7 +531,8 @@ public class Fish {
                 ", \"parentFishId\":" + (parentFishId != null ? parentFishId : "null") +
                 ", \"base64Image\":\"" + (base64Image != null ? base64Image : "null") + "\"" +
                 ", \"imagePath\":\"" + (imagePath != null ? imagePath : "null") + "\"" +
-                ", \"json\":\"" + (json != null ? json : "null") + "\"" +
+                ", \"mood\":\"" + (mood != null ? mood : "null") + "\"" +
+                ", \"age\":\"" + (age != null ? age : "null") + "\"" +
                 ", \"alive\":" + (alive != null ? alive : "null") +
                 ", \"weight\":" + (weight != null ? weight : "null") +
                 ", \"minWeight\":" + (minWeight != null ? minWeight : "null") +
@@ -558,7 +553,8 @@ public class Fish {
             jsonObject.put("parentFishId", fish.getParentFishId());
             jsonObject.put("base64Image", fish.getBase64Image());
             jsonObject.put("imagePath", fish.getImagePath());
-            jsonObject.put("json", fish.getJson());
+            jsonObject.put("mood", fish.getMood());
+            jsonObject.put("age", fish.getAge());
             jsonObject.put("alive", fish.getAlive());
             jsonObject.put("weight", fish.getWeight());
             jsonObject.put("minWeight", fish.getMinWeight());

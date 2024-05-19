@@ -41,7 +41,7 @@ public class FishTests {
     @Test
     public void testSaveToDatabase() {
         Fish fish = new Fish(1L, "Goldfish", new Timestamp(System.currentTimeMillis()), null, "base64Image",
-                "imagePath", "{}", true, 1.0, 0.5, 2.0, 5, 8, 3);
+                "imagePath", "sad", 5, true, 1.0, 0.5, 2.0, 5, 8, 3);
         fish.saveToDatabase(dataSource);
 
         Fish latestFish = Fish.getLatestFish(dataSource);
@@ -51,7 +51,8 @@ public class FishTests {
                 "The base64 image of the latest fish should match the one just saved.");
         assertEquals("imagePath", latestFish.getImagePath(),
                 "The image path of the latest fish should match the one just saved.");
-        assertEquals("{}", latestFish.getJson(), "The JSON of the latest fish should match the one just saved.");
+        assertEquals("sad", latestFish.getMood(), "The Mood of the latest fish should match the one just saved.");
+        assertEquals(5, latestFish.getAge(), "The Age of the latest fish should match the one just saved.");
         assertTrue(latestFish.getAlive(), "The fish should be alive.");
         assertEquals(1.0, latestFish.getWeight(), "The weight of the fish should be 1.0.");
         assertEquals(0.5, latestFish.getMinWeight(), "The minimum weight of the fish should be 0.5.");
@@ -70,7 +71,8 @@ public class FishTests {
         // assertNotNull(randomFish.getBase64Image(), "Random fish should have a base64
         // image.");
         assertNotNull(randomFish.getImagePath(), "Random fish should have an image path.");
-        assertNotNull(randomFish.getJson(), "Random fish should have JSON data.");
+        assertNotNull(randomFish.getMood(), "Random fish should have Mood.");
+        assertNotNull(randomFish.getAge(), "Random fish should have Age.");
         assertTrue(randomFish.getAlive(), "Random fish should be alive.");
         assertNotNull(randomFish.getWeight(), "Random fish should have a weight.");
         assertNotNull(randomFish.getMinWeight(), "Random fish should have a minimum weight.");
@@ -96,14 +98,15 @@ public class FishTests {
     public void testUpdateInDatabase() throws SQLException {
         // Save initial fish to database
         Fish fish = new Fish(1L, "Goldfish", new Timestamp(System.currentTimeMillis()), null, "base64Image",
-                "imagePath", "{}", false, 1.0, 0.5, 2.0, 5, 8, 3);
+                "imagePath", "sad", 5, false, 1.0, 0.5, 2.0, 5, 8, 3);
         fish.saveToDatabase(dataSource);
 
         // Update fish details
         fish.setName("UpdatedGoldfish");
         fish.setBase64Image("updatedBase64Image");
         fish.setImagePath("updatedImagePath");
-        fish.setJson("{\"updated\":true}");
+        fish.setMood("happy");
+        fish.setAge(3);
         fish.setAlive(true);
         fish.setWeight(2.0);
         fish.setMinWeight(1.0);
