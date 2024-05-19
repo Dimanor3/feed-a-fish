@@ -2,6 +2,7 @@ package com.goia.feedafish;
 
 import java.sql.Connection;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.sql.DataSource;
 
@@ -57,7 +58,7 @@ public class TestController {
     }
 
     @GetMapping(value = "/get/latest", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> getLatestOrCreateFishEndpoint() {
+    public ResponseEntity<String> getLatestOrCreateFishEndpoint(TimeZone timezone) {
         try {
             Fish latestFish = Fish.getLatestFish(dataSource);
             if (latestFish == null) {
