@@ -27,9 +27,11 @@ export class FishService implements OnDestroy {
     'https://bijanrazavi.com/feed-a-fish/api/',
     'get/latest',
     'list/dead',
+    'feed/latest',
   ];
   private getFishSub: Subscription = null as any;
   private getDeadSub: Subscription = null as any;
+  private feedFishSub: Subscription = null as any;
   fishChanged = new Subject<FishStatus>();
 
   constructor(private http: HttpClient) {}
@@ -94,6 +96,20 @@ export class FishService implements OnDestroy {
       });
   }
 
+  public feedFish() {
+    this.feedFishSub = this.http
+      .get(this.url[0] + this.url[3], { responseType: 'text' })
+      .pipe(
+        catchError(this.handleError),
+        tap((resData) => {
+          console.log(resData);
+        })
+      )
+      .subscribe((response) => {
+        console.log(response);
+      });
+  }
+
   private handleError(errorRes: HttpErrorResponse) {
     // let errorMessage = "An unkown error occurred!";
     console.log(errorRes);
@@ -108,5 +124,6 @@ export class FishService implements OnDestroy {
   ngOnDestroy(): void {
     this.getFishSub.unsubscribe();
     this.getDeadSub.unsubscribe();
+    this.feedFishSub.unsubscribe();
   }
 }

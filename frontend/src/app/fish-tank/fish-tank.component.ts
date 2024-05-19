@@ -20,10 +20,12 @@ export class FishTankComponent implements OnInit, OnDestroy {
     top: '0px',
     transition: 'transform 2s, left 2s, top 2s',
   };
-  mousePosX = -1;
-  mousePosY = -1;
   fishSub: Subscription = null as any;
   fish: FishStatus = null as any;
+  fishWidth: String = '10%';
+
+  mousePosX = -1;
+  mousePosY = -1;
 
   private mousePosSubscription: Subscription = null as any;
 
@@ -100,6 +102,10 @@ export class FishTankComponent implements OnInit, OnDestroy {
       left: `${x - rect.width / 2}px`,
       top: `${y - rect.height / 2}px`,
     };
+  }
+
+  feedFish() {
+    this.fishService.feedFish();
   }
 
   ngOnDestroy(): void {
