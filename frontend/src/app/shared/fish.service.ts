@@ -106,7 +106,7 @@ export class FishService implements OnDestroy {
         })
       )
       .subscribe((response) => {
-        console.log(response);
+        this.getFish();
       });
   }
 
