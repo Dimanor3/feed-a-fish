@@ -6,7 +6,7 @@ import { Subscription, throwError } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class FishService implements OnDestroy {
   private url: string[] = [
-    'bijanrazavi.com/feed-a-fish/api/',
+    'https://bijanrazavi.com/feed-a-fish/api/',
     'get/latest',
     'list/dead',
   ];
