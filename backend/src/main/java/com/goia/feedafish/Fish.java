@@ -9,8 +9,11 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.sql.DataSource;
 
+import groovy.transform.Synchronized;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -29,13 +32,14 @@ public class Fish {
     private Integer currentHungerLevel;
     private Integer gainWeightHungerLevel;
     private Integer loseWeightHungerLevel;
+    private static final ReadWriteLock latestFishLock = new ReentrantReadWriteLock();
 
     public Fish() {
     }
 
     public Fish(Long id, String name, Timestamp createdAt, Integer parentFishId, String base64Image, String imagePath,
-            String json, Boolean alive, Double weight, Double minWeight, Double maxWeight, Integer currentHungerLevel,
-            Integer gainWeightHungerLevel, Integer loseWeightHungerLevel) {
+                String json, Boolean alive, Double weight, Double minWeight, Double maxWeight, Integer currentHungerLevel,
+                Integer gainWeightHungerLevel, Integer loseWeightHungerLevel) {
         this.id = id;
         this.name = name;
         this.createdAt = createdAt;
@@ -50,6 +54,23 @@ public class Fish {
         this.currentHungerLevel = currentHungerLevel;
         this.gainWeightHungerLevel = gainWeightHungerLevel;
         this.loseWeightHungerLevel = loseWeightHungerLevel;
+    }
+
+    public void updateFishInfo(ResultSet rs) throws SQLException {
+        this.setId(rs.getLong("id"));
+        this.setName(rs.getString("name"));
+        this.setCreatedAt(rs.getTimestamp("created_at"));
+        this.setParentFishId(rs.getObject("parent_fish_id") != null ? rs.getInt("parent_fish_id") : null);
+        this.setBase64Image(rs.getString("base64_image"));
+        this.setImagePath(rs.getString("image_path"));
+        this.setJson(rs.getString("json"));
+        this.setAlive(rs.getBoolean("alive"));
+        this.setWeight(rs.getDouble("weight"));
+        this.setMinWeight(rs.getDouble("min_weight"));
+        this.setMaxWeight(rs.getDouble("max_weight"));
+        this.setCurrentHungerLevel(rs.getInt("current_hunger_level"));
+        this.setGainWeightHungerLevel(rs.getInt("gain_weight_hunger_level"));
+        this.setLoseWeightHungerLevel(rs.getInt("lose_weight_hunger_level"));
     }
 
     // Getters and setters for all fields
@@ -245,36 +266,46 @@ public class Fish {
         // return this;
         // }
 
-        try (Connection conn = dataSource.getConnection()) {
-            // Increment current hunger level
-            this.currentHungerLevel -= 1;
-            System.out.println("Current hunger level decremented. New hunger level: " + this.currentHungerLevel);
+        try {
+            // Make sure we don't d multiple writes at once
+            latestFishLock.writeLock().lock();
+            // Make sure the fish hasn't updated since we last got it
+            getLatestFish(dataSource, this);
 
-            if (this.currentHungerLevel < gainWeightHungerLevel) {
-                this.weight += 1;
-                System.out.println(
-                        "Hunger level below gainWeightHungerLevel. Weight incremented. New weight: " + this.weight);
-            }
-            if (this.currentHungerLevel > this.loseWeightHungerLevel) {
-                this.weight -= 1;
-                System.out.println(
-                        "Hunger level above loseWeightHungerLevel. Weight decremented. New weight: " + this.weight);
-            }
+            try (Connection conn = dataSource.getConnection()) {
+                // Increment current hunger level
+                this.currentHungerLevel -= 1;
+                System.out.println("Current hunger level decremented. New hunger level: " + this.currentHungerLevel);
 
-            // Check if the weight exceeds the maximum weight
-            if (this.weight > this.maxWeight || this.weight < this.minWeight) {
-                this.alive = false; // Fish dies if it exceeds max weight
-                System.out.println("Weight out of bounds. Fish is now dead. Alive status: " + this.alive);
-            }
+                if (this.currentHungerLevel < gainWeightHungerLevel) {
+                    this.weight += 1;
+                    System.out.println(
+                            "Hunger level below gainWeightHungerLevel. Weight incremented. New weight: " + this.weight);
+                }
+                if (this.currentHungerLevel > this.loseWeightHungerLevel) {
+                    this.weight -= 1;
+                    System.out.println(
+                            "Hunger level above loseWeightHungerLevel. Weight decremented. New weight: " + this.weight);
+                }
 
-            // Update the fish record in the database using updateInDatabase method
-            System.out.println("Fish record updated in the database.");
-            this.updateInDatabase(dataSource);
-        } catch (SQLException e) {
-            System.out.println("Error updating fish in database: " + e.getMessage());
+                // Check if the weight exceeds the maximum weight
+                if (this.weight > this.maxWeight || this.weight < this.minWeight) {
+                    this.alive = false; // Fish dies if it exceeds max weight
+                    System.out.println("Weight out of bounds. Fish is now dead. Alive status: " + this.alive);
+                }
+
+                // Update the fish record in the database using updateInDatabase method
+                System.out.println("Fish record updated in the database.");
+                this.updateInDatabase(dataSource);
+            } catch (SQLException e) {
+                System.out.println("Error updating fish in database: " + e.getMessage());
+            }
+        }
+        finally
+        {
+            latestFishLock.writeLock().unlock();
         }
         System.out.println("Ending feedFish function for fish ID: " + this.id);
-
         return this;
     }
 
@@ -286,20 +317,7 @@ public class Fish {
                 ResultSet rs = pstmt.executeQuery();
                 while (rs.next()) {
                     Fish fish = new Fish();
-                    fish.setId(rs.getLong("id"));
-                    fish.setName(rs.getString("name"));
-                    fish.setCreatedAt(rs.getTimestamp("created_at"));
-                    fish.setParentFishId((Integer) rs.getObject("parent_fish_id"));
-                    fish.setBase64Image(rs.getString("base64_image"));
-                    fish.setImagePath(rs.getString("image_path"));
-                    fish.setJson(rs.getString("json"));
-                    fish.setAlive(rs.getBoolean("alive"));
-                    fish.setWeight(rs.getDouble("weight"));
-                    fish.setMinWeight(rs.getDouble("min_weight"));
-                    fish.setMaxWeight(rs.getDouble("max_weight"));
-                    fish.setCurrentHungerLevel(rs.getInt("current_hunger_level"));
-                    fish.setGainWeightHungerLevel(rs.getInt("gain_weight_hunger_level"));
-                    fish.setLoseWeightHungerLevel(rs.getInt("lose_weight_hunger_level"));
+                    fish.updateFishInfo(rs);
                     deadFishList.add(fish);
                 }
             }
@@ -309,28 +327,20 @@ public class Fish {
         return deadFishList;
     }
 
+
     public static Fish getLatestFish(DataSource dataSource) {
-        Fish fish = null;
+        return getLatestFish(dataSource, null);
+    }
+
+    public static Fish getLatestFish(DataSource dataSource, Fish fish) {
         try (Connection conn = dataSource.getConnection()) {
             String sql = "SELECT * FROM fish WHERE alive = TRUE ORDER BY created_at DESC LIMIT 1";
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 ResultSet rs = pstmt.executeQuery();
                 if (rs.next()) {
-                    fish = new Fish();
-                    fish.setId(rs.getLong("id"));
-                    fish.setName(rs.getString("name"));
-                    fish.setCreatedAt(rs.getTimestamp("created_at"));
-                    fish.setParentFishId((Integer) rs.getObject("parent_fish_id"));
-                    fish.setBase64Image(rs.getString("base64_image"));
-                    fish.setImagePath(rs.getString("image_path"));
-                    fish.setJson(rs.getString("json"));
-                    fish.setAlive(rs.getBoolean("alive"));
-                    fish.setWeight(rs.getDouble("weight"));
-                    fish.setMinWeight(rs.getDouble("min_weight"));
-                    fish.setMaxWeight(rs.getDouble("max_weight"));
-                    fish.setCurrentHungerLevel(rs.getInt("current_hunger_level"));
-                    fish.setGainWeightHungerLevel(rs.getInt("gain_weight_hunger_level"));
-                    fish.setLoseWeightHungerLevel(rs.getInt("lose_weight_hunger_level"));
+                    if (fish == null)
+                        fish = new Fish();
+                    fish.updateFishInfo(rs);
                 }
             }
         } catch (SQLException e) {
@@ -467,24 +477,11 @@ public class Fish {
     public static List<Fish> getAllFish(DataSource dataSource) {
         List<Fish> allFish = new ArrayList<>();
         try (Connection conn = dataSource.getConnection();
-                PreparedStatement stmt = conn.prepareStatement("SELECT * FROM fish");
-                ResultSet rs = stmt.executeQuery()) {
+             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM fish");
+             ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 Fish fish = new Fish();
-                fish.setId(rs.getLong("id"));
-                fish.setName(rs.getString("name"));
-                fish.setCreatedAt(rs.getTimestamp("created_at"));
-                fish.setParentFishId(rs.getObject("parent_fish_id") != null ? rs.getInt("parent_fish_id") : null);
-                fish.setBase64Image(rs.getString("base64_image"));
-                fish.setImagePath(rs.getString("image_path"));
-                fish.setJson(rs.getString("json"));
-                fish.setAlive(rs.getBoolean("alive"));
-                fish.setWeight(rs.getDouble("weight"));
-                fish.setMinWeight(rs.getDouble("min_weight"));
-                fish.setMaxWeight(rs.getDouble("max_weight"));
-                fish.setCurrentHungerLevel(rs.getInt("current_hunger_level"));
-                fish.setGainWeightHungerLevel(rs.getInt("gain_weight_hunger_level"));
-                fish.setLoseWeightHungerLevel(rs.getInt("lose_weight_hunger_level"));
+                fish.updateFishInfo(rs);
                 allFish.add(fish);
             }
         } catch (SQLException e) {
