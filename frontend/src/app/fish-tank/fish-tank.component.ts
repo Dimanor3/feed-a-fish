@@ -24,6 +24,10 @@ export class FishTankComponent implements OnInit, OnDestroy {
   fish: FishStatus = null as any;
   fishWidth: String = '10%';
 
+  private width: Number = 3;
+  private minWidth: Number = 3;
+  private maxWidth: Number = 43;
+
   mousePosX = -1;
   mousePosY = -1;
 
@@ -106,6 +110,20 @@ export class FishTankComponent implements OnInit, OnDestroy {
 
   feedFish() {
     this.fishService.feedFish();
+  }
+
+  updateWidth() {
+    if (this.fish.weight <= this.fish.minWeight) {
+      this.width = this.minWidth;
+    } else if (this.fish.weight >= this.fish.maxWeight) {
+      this.width = this.maxWidth;
+    } else {
+      this.width =
+        +this.minWidth +
+        ((+this.fish.weight - +this.fish.minWeight) *
+          (+this.maxWidth - +this.minWidth)) /
+          (+this.fish.maxWeight - +this.fish.minWeight);
+    }
   }
 
   ngOnDestroy(): void {
