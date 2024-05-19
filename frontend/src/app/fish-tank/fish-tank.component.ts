@@ -36,6 +36,8 @@ export class FishTankComponent implements OnInit, OnDestroy {
   constructor(private fishService: FishService) {}
 
   ngOnInit(): void {
+    this.fishService.getFish();
+
     this.mousePosSubscription = fromEvent<MouseEvent>(document, 'mousemove')
       .pipe(
         throttleTime(100),
@@ -64,8 +66,6 @@ export class FishTankComponent implements OnInit, OnDestroy {
         this.fishWidth = this.width + '%';
       }
     );
-
-    this.fishService.getFish();
 
     console.log(this.fish.imagePath);
   }
