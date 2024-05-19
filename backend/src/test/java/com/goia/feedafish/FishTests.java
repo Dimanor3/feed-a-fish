@@ -90,8 +90,8 @@ public class FishTests {
                 "Image path should start with '/fish/'.");
 
         // Validate JSON structure
-        assertDoesNotThrow(() -> new JSONObject(randomFish.getJson()),
-                "JSON data should be in a valid JSON format.");
+//        assertDoesNotThrow(() -> new JSONObject(randomFish.getJson()),
+//                "JSON data should be in a valid JSON format.");
     }
 
     @Test
@@ -127,8 +127,10 @@ public class FishTests {
                 "The base64 image of the updated fish should match the updated base64 image.");
         assertEquals("updatedImagePath", updatedFish.getImagePath(),
                 "The image path of the updated fish should match the updated image path.");
-        assertEquals("{\"updated\":true}", updatedFish.getJson(),
-                "The JSON of the updated fish should match the updated JSON.");
+        assertEquals("happy", updatedFish.getMood(),
+                "The Mood of the updated fish should match the updated mood.");
+        assertEquals(3, updatedFish.getAge(),
+                "The Age of the updated fish should match the updated age.");
         assertTrue(updatedFish.getAlive(), "The fish should be alive after update.");
         assertEquals(2.0, updatedFish.getWeight(), "The weight of the updated fish should be 2.0.");
         assertEquals(1.0, updatedFish.getMinWeight(), "The minimum weight of the updated fish should be 1.0.");
