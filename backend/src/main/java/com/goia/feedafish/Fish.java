@@ -475,12 +475,12 @@ public class Fish {
 
         // Set default values for new fields
         fish.setAlive(true);
-        fish.setWeight(2.0);
-        fish.setMinWeight(1.0);
-        fish.setMaxWeight(10.0);
-        fish.setCurrentHungerLevel(5);
-        fish.setGainWeightHungerLevel(3);
-        fish.setLoseWeightHungerLevel(12);
+        fish.setMinWeight(random.nextDouble(10, 30));
+        fish.setMaxWeight(random.nextDouble(75, 100));
+        fish.setWeight(random.nextDouble(fish.getMinWeight() + 5, fish.getMaxWeight() - 5));
+        fish.setGainWeightHungerLevel(random.nextInt(0, 6));
+        fish.setLoseWeightHungerLevel(random.nextInt(18, 24));
+        fish.setCurrentHungerLevel(random.nextInt(fish.getGainWeightHungerLevel() + 2, fish.getLoseWeightHungerLevel() - 2));
 
         return fish;
     }
