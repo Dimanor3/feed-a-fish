@@ -36,6 +36,14 @@ export class FishTankComponent implements OnInit, OnDestroy {
   constructor(private fishService: FishService) {}
 
   ngOnInit(): void {
+    this.fishSub = this.fishService.fishChanged.subscribe(
+      (fish: FishStatus) => {
+        this.fish = fish;
+        this.updateWidth();
+        this.fishWidth = this.width + '%';
+      }
+    );
+
     this.fishService.getFish();
 
     this.mousePosSubscription = fromEvent<MouseEvent>(document, 'mousemove')
@@ -58,14 +66,6 @@ export class FishTankComponent implements OnInit, OnDestroy {
     if (+this.fish.currentHungerLevel < +this.fish.gainWeightHungerLevel + 6) {
       this.moveFishInterval();
     }
-
-    this.fishSub = this.fishService.fishChanged.subscribe(
-      (fish: FishStatus) => {
-        this.fish = fish;
-        this.updateWidth();
-        this.fishWidth = this.width + '%';
-      }
-    );
 
     console.log(this.fish.imagePath);
   }
