@@ -44,7 +44,8 @@ public class TestController {
                                      @RequestParam(required = false) Integer loseWeightHungerLevel,
                                      @RequestParam(required = false) String base64Image,
                                      @RequestParam(required = false) String imagePath,
-                                     @RequestParam(required = false) String json) {
+                                     @RequestParam(required = false) String mood,
+                                     @RequestParam(required = false) Integer age) {
         Fish newFish = Fish.generateRandomFish();
 
         if (name != null) newFish.setName(name);
@@ -57,7 +58,9 @@ public class TestController {
         if (loseWeightHungerLevel != null) newFish.setLoseWeightHungerLevel(loseWeightHungerLevel);
         if (base64Image != null) newFish.setBase64Image(base64Image);
         if (imagePath != null) newFish.setImagePath(imagePath);
-        if (json != null) newFish.setJson(json);
+        if (mood != null) newFish.setMood(mood);
+        if (age != null) newFish.setAge(age);
+
 
         newFish.saveToDatabase(dataSource);
         return ResponseEntity.ok(newFish.toJson());
