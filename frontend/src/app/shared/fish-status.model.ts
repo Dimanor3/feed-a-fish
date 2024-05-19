@@ -1,15 +1,11 @@
-interface FishDesc {
-  mood: String;
-  age: Number;
-}
-
 export class FishStatus {
   public fishId: Number;
   public name: String;
   public createdAt: Date;
   public parentFishId: Number;
   public imagePath: String;
-  public fishDesc: FishDesc;
+  public mood: String;
+  public age: Number;
   public alive: Boolean;
   public weight: Number;
   public minWeight: Number;
@@ -24,7 +20,8 @@ export class FishStatus {
     createdAt: Date,
     parentFishId: Number,
     imagePath: String,
-    fishDesc: FishDesc,
+    mood: String,
+    age: Number,
     alive: Boolean,
     weight: Number,
     minWeight: Number,
@@ -38,7 +35,8 @@ export class FishStatus {
     this.createdAt = createdAt;
     this.parentFishId = parentFishId;
     this.imagePath = imagePath;
-    this.fishDesc = fishDesc;
+    this.mood = mood;
+    this.age = age;
     this.alive = alive;
     this.weight = weight;
     this.minWeight = minWeight;

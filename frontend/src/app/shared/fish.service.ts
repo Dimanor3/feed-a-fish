@@ -10,10 +10,8 @@ export interface Fish {
   createdAt: Date;
   parentFishId: Number;
   imagePath: String;
-  json: {
-    mood: String;
-    age: Number;
-  };
+  mood: String;
+  age: Number;
   alive: Boolean;
   weight: Number;
   minWeight: Number;
@@ -54,10 +52,7 @@ export class FishService implements OnDestroy {
           })
         )
         .subscribe((response) => {
-          console.log(response);
-
           const res: Fish = JSON.parse(response);
-          console.log(res);
 
           const createdAt: Date = new Date(res.createdAt);
           const imagePath: String = this.url[0] + res.imagePath;
@@ -68,7 +63,8 @@ export class FishService implements OnDestroy {
             createdAt,
             res.parentFishId,
             imagePath,
-            res.json,
+            res.mood,
+            res.age,
             res.alive,
             res.weight,
             res.minWeight,
