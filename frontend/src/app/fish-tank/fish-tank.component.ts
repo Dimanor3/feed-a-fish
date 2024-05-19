@@ -76,8 +76,8 @@ export class FishTankComponent implements OnInit, OnDestroy {
     if (fish) {
       // this.moveFishTo(randomX, randomY);
 
-      fish.style.left = this.mousePosX + fish.offsetWidth / 2 + 'px';
-      fish.style.top = this.mousePosY + fish.offsetHeight / 2 + 'px';
+      fish.style.left = this.mousePosX - fish.offsetWidth / 2 + 'px';
+      fish.style.top = this.mousePosY - fish.offsetHeight / 2 + 'px';
     }
   }
 
