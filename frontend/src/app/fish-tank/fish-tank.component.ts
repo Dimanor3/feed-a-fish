@@ -51,6 +51,8 @@ export class FishTankComponent implements OnInit, OnDestroy {
     this.fishSub = this.fishService.fishChanged.subscribe(
       (fish: FishStatus) => {
         this.fish = fish;
+        this.updateWidth();
+        this.fishWidth = this.width + '%';
       }
     );
 
@@ -110,6 +112,8 @@ export class FishTankComponent implements OnInit, OnDestroy {
 
   feedFish() {
     this.fishService.feedFish();
+    this.updateWidth();
+    this.fishWidth = this.width + '%';
   }
 
   updateWidth() {
