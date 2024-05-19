@@ -22,6 +22,7 @@ export class FishTankComponent implements OnInit, OnDestroy {
   };
   mousePosX = -1;
   mousePosY = -1;
+  fishSub: Subscription = null as any;
   fish: FishStatus = null as any;
 
   private mousePosSubscription: Subscription = null as any;
@@ -41,7 +42,14 @@ export class FishTankComponent implements OnInit, OnDestroy {
         this.moveFish();
       });
 
-    this.fish = this.fishService.getFish();
+    this.fishSub = this.fishService.fishChanged.subscribe(
+      (fish: FishStatus) => {
+        this.fish = fish;
+      }
+    );
+
+    this.fishService.getFish();
+
     console.log(this.fish.imagePath);
   }
 

@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, OnDestroy } from '@angular/core';
 import { catchError, tap } from 'rxjs/operators';
-import { Subscription, throwError } from 'rxjs';
+import { Subscription, Subject, throwError } from 'rxjs';
 import { FishStatus } from './fish-status.model';
 
 export interface Fish {
@@ -30,7 +30,7 @@ export class FishService implements OnDestroy {
   ];
   private getFishSub: Subscription = null as any;
   private getDeadSub: Subscription = null as any;
-  private fish: FishStatus = null as any;
+  fishChanged = new Subject<FishStatus>();
 
   constructor(private http: HttpClient) {}
 
@@ -55,28 +55,28 @@ export class FishService implements OnDestroy {
           const res: Fish = JSON.parse(response);
 
           const createdAt: Date = new Date(res.createdAt);
-          const imagePath: String = '/api' + res.imagePath;
-          console.log(imagePath);
+          const imagePath: String = this.url[0] + res.imagePath;
+          // console.log(imagePath);
 
-          this.fish = new FishStatus(
-            res.id,
-            res.name,
-            createdAt,
-            res.parentFishId,
-            imagePath,
-            res.mood,
-            res.age,
-            res.alive,
-            res.weight,
-            res.minWeight,
-            res.maxWeight,
-            res.currentHungerLevel,
-            res.gainWeightHungerLevel,
-            res.loseWeightHungerLevel
+          this.fishChanged.next(
+            new FishStatus(
+              res.id,
+              res.name,
+              createdAt,
+              res.parentFishId,
+              imagePath,
+              res.mood,
+              res.age,
+              res.alive,
+              res.weight,
+              res.minWeight,
+              res.maxWeight,
+              res.currentHungerLevel,
+              res.gainWeightHungerLevel,
+              res.loseWeightHungerLevel
+            )
           );
         });
-
-      return this.fish;
     }
   }
 
