@@ -475,8 +475,8 @@ public class Fish {
 
         // Set default values for new fields
         fish.setAlive(true);
-        fish.setWeight(1.0);
-        fish.setMinWeight(2.0);
+        fish.setWeight(2.0);
+        fish.setMinWeight(1.0);
         fish.setMaxWeight(10.0);
         fish.setCurrentHungerLevel(5);
         fish.setGainWeightHungerLevel(3);
