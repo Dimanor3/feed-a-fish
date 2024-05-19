@@ -18,6 +18,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
@@ -109,6 +112,18 @@ public class TestController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("{\"error\": \"" + e.getMessage() + "\"}");
         }
+    }
+
+    @GetMapping(value = "/ip", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getClientIp(HttpServletRequest request) {
+        String clientIp = request.getRemoteAddr();
+        return ResponseEntity.ok("{\"ip\": \"" + clientIp + "\"}");
+    }
+
+    @GetMapping(value = "/server-ip", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getServerIp(HttpServletRequest request) {
+        String serverIp = request.getLocalAddr();
+        return ResponseEntity.ok("{\"server_ip\": \"" + serverIp + "\"}");
     }
 
     @Scheduled(fixedRate = 3600000) // Schedule this method to run every hour
