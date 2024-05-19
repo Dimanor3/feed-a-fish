@@ -252,6 +252,15 @@ public class Fish {
                 pstmt.setInt(14, this.loseWeightHungerLevel);
                 pstmt.executeUpdate();
             }
+
+            // Grab the id of the new fish
+            sql = "select last_insert_rowid()";
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                ResultSet rs = pstmt.executeQuery();
+                if (rs.next()) {
+                    this.id = rs.getLong(1);
+                }
+            }
         } catch (SQLException e) {
             System.out.println("Error saving fish to database: " + e.getMessage());
         }
