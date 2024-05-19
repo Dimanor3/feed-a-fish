@@ -27,7 +27,8 @@ public class FeedafishApplication {
 					"parent_fish_id INTEGER, " +
 					"base64_image TEXT, " +
 					"image_path TEXT, " +
-					"json TEXT, " +
+					"mood TEXT, " +
+					"age INTEGER, " +
 					"alive BOOLEAN DEFAULT TRUE, " +
 					"weight DECIMAL, " +
 					"min_weight DECIMAL, " +
