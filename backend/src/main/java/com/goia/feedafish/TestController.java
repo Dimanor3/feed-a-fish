@@ -1,6 +1,9 @@
 package com.goia.feedafish;
 
 import java.sql.Connection;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -58,14 +61,17 @@ public class TestController {
     }
 
     @GetMapping(value = "/get/latest", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> getLatestOrCreateFishEndpoint(TimeZone timezone) {
+    public ResponseEntity<String> getLatestOrCreateFishEndpoint(ZoneId zoneId) {
         try {
             Fish latestFish = Fish.getLatestFish(dataSource);
             if (latestFish == null) {
-                // If no latest fish exists, generate a new one
-                latestFish = Fish.generateRandomFish();
-                latestFish.saveToDatabase(dataSource);
-                return ResponseEntity.status(HttpStatus.CREATED).body(latestFish.toJson());
+                LocalDateTime curTime = LocalDateTime.now(zoneId);
+                if (curTime.getHour() == 11 && curTime.getMinute() == 11) {
+                    // If no latest fish exists, generate a new one
+                    latestFish = Fish.generateRandomFish();
+                    latestFish.saveToDatabase(dataSource);
+                    return ResponseEntity.status(HttpStatus.CREATED).body(latestFish.toJson());
+                }
             }
             return ResponseEntity.ok(latestFish.toJson());
         } catch (Exception e) {
