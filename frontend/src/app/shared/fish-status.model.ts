@@ -1,5 +1,5 @@
 export class FishStatus {
-  public fishId: Number;
+  public id: Number;
   public name: String;
   public createdAt: Date;
   public parentFishId: Number;
@@ -30,7 +30,7 @@ export class FishStatus {
     gainWeightHungerLevel: Number,
     loseWeightHungerLevel: Number
   ) {
-    this.fishId = id;
+    this.id = id;
     this.name = name;
     this.createdAt = createdAt;
     this.parentFishId = parentFishId;
