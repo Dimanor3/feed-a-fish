@@ -458,8 +458,9 @@ public class Fish {
         fish.setImagePath(possibleImagePaths[random.nextInt(possibleImagePaths.length)]);
 
         // Generate random JSON data
-        String json = String.format("{\"mood\":\"%s\",\"age\":%d}",
+        String json = String.format("{\\\"mood\\\":\\\"%s\\\",\\\"age\\\":%d}",
                 random.nextBoolean() ? "happy" : "sad", random.nextInt(10) + 1);
+
         fish.setJson(json);
 
         // Set default values for new fields
