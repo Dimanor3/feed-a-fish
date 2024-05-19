@@ -54,10 +54,9 @@ export class FishService implements OnDestroy {
         .subscribe((response) => {
           const res: Fish = JSON.parse(response);
 
-          console.log(res.imagePath);
-
           const createdAt: Date = new Date(res.createdAt);
           const imagePath: String = '/api' + res.imagePath;
+          console.log(res.imagePath);
 
           this.fish = new FishStatus(
             res.id,
