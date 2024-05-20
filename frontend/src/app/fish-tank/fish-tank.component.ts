@@ -42,6 +42,8 @@ export class FishTankComponent implements OnInit, OnDestroy {
   constructor(private fishService: FishService) {}
 
   ngOnInit(): void {
+    this.fishService.getFish();
+
     this.fishSub = this.fishService.fishChanged.subscribe(
       (fish: FishStatus) => {
         if (fish === null) {
@@ -59,38 +61,38 @@ export class FishTankComponent implements OnInit, OnDestroy {
       }
     );
 
-    this.fishKilledSub = this.fishService.fishKilled.subscribe(
-      (fish: FishStatus) => {
-        if (fish === null) {
-          this.killedFish = true;
-          this.fishDead = true;
+    if (!this.fishDead) {
+      this.fishKilledSub = this.fishService.fishKilled.subscribe(
+        (fish: FishStatus) => {
+          if (fish === null) {
+            this.killedFish = true;
+            this.fishDead = true;
 
-          console.log('dead fish: ' + this.fishDead);
-          console.log('killed fish: ' + this.killedFish);
+            console.log('dead fish: ' + this.fishDead);
+            console.log('killed fish: ' + this.killedFish);
 
-          this.fish = null as any;
+            this.fish = null as any;
 
-          this.fishSub.unsubscribe();
-          this.fishKilledSub.unsubscribe();
-          this.mousePosSubscription.unsubscribe();
-          clearInterval(+this.fishInterval);
+            this.fishSub.unsubscribe();
+            this.fishKilledSub.unsubscribe();
+            this.mousePosSubscription.unsubscribe();
+            clearInterval(+this.fishInterval);
+          }
         }
-      }
-    );
+      );
 
-    this.fishService.getFish();
+      this.mousePosSubscription = fromEvent<MouseEvent>(document, 'mousemove')
+        .pipe(
+          throttleTime(100),
+          map((event: MouseEvent) => ({ x: event.clientX, y: event.clientY }))
+        )
+        .subscribe((e) => {
+          this.mousePosX = e.x;
+          this.mousePosY = e.y;
 
-    this.mousePosSubscription = fromEvent<MouseEvent>(document, 'mousemove')
-      .pipe(
-        throttleTime(100),
-        map((event: MouseEvent) => ({ x: event.clientX, y: event.clientY }))
-      )
-      .subscribe((e) => {
-        this.mousePosX = e.x;
-        this.mousePosY = e.y;
-
-        this.moveFish();
-      });
+          this.moveFish();
+        });
+    }
   }
 
   moveFish(): void {
