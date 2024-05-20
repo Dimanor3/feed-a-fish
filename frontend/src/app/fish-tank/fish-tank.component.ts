@@ -27,6 +27,7 @@ export class FishTankComponent implements OnInit, OnDestroy {
   fishDead: boolean = false;
   killedFish: boolean = false;
   fishName: String = '';
+  fishImagePath: String = '';
 
   fishInterval: Number = null as any;
   fishIntervalMovement: boolean = false;
@@ -56,6 +57,7 @@ export class FishTankComponent implements OnInit, OnDestroy {
           this.killedFish = false;
           this.fish = fish;
           this.fishName = fish.name;
+          this.fishImagePath = fish.imagePath;
           this.updateWidth();
           this.fishWidth = this.width + '%';
 
