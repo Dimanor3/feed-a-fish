@@ -30,6 +30,8 @@ export class FishTankComponent implements OnInit, OnDestroy {
   fishInterval: Number = null as any;
   fishIntervalMovement: boolean = false;
 
+  subscriptionsInitialized: boolean = false;
+
   private width: Number = 3;
   private minWidth: Number = 3;
   private maxWidth: Number = 43;
@@ -48,54 +50,53 @@ export class FishTankComponent implements OnInit, OnDestroy {
       (fish: FishStatus) => {
         if (fish === null) {
           this.fishDead = true;
-          console.log('testing');
         } else {
-          console.log('testing2');
-
           this.fishDead = false;
           this.killedFish = false;
           this.fish = fish;
           this.updateWidth();
           this.fishWidth = this.width + '%';
-        }
 
-        console.log('dead fish: ' + this.fishDead);
-        console.log('killed fish: ' + this.killedFish);
+          if (!this.subscriptionsInitialized) {
+            this.subscriptionsInitialized = true;
+            this.initalizeSubscriptions();
+          }
+        }
+      }
+    );
+  }
+
+  initalizeSubscriptions() {
+    this.fishKilledSub = this.fishService.fishKilled.subscribe(
+      (fish: FishStatus) => {
+        if (fish === null) {
+          this.killedFish = true;
+          this.fishDead = true;
+
+          console.log('dead fish: ' + this.fishDead);
+          console.log('killed fish: ' + this.killedFish);
+
+          this.fish = null as any;
+
+          this.fishSub.unsubscribe();
+          this.fishKilledSub.unsubscribe();
+          this.mousePosSubscription.unsubscribe();
+          clearInterval(+this.fishInterval);
+        }
       }
     );
 
-    if (!this.fishDead) {
-      this.fishKilledSub = this.fishService.fishKilled.subscribe(
-        (fish: FishStatus) => {
-          if (fish === null) {
-            this.killedFish = true;
-            this.fishDead = true;
+    this.mousePosSubscription = fromEvent<MouseEvent>(document, 'mousemove')
+      .pipe(
+        throttleTime(100),
+        map((event: MouseEvent) => ({ x: event.clientX, y: event.clientY }))
+      )
+      .subscribe((e) => {
+        this.mousePosX = e.x;
+        this.mousePosY = e.y;
 
-            console.log('dead fish: ' + this.fishDead);
-            console.log('killed fish: ' + this.killedFish);
-
-            this.fish = null as any;
-
-            this.fishSub.unsubscribe();
-            this.fishKilledSub.unsubscribe();
-            this.mousePosSubscription.unsubscribe();
-            clearInterval(+this.fishInterval);
-          }
-        }
-      );
-
-      this.mousePosSubscription = fromEvent<MouseEvent>(document, 'mousemove')
-        .pipe(
-          throttleTime(100),
-          map((event: MouseEvent) => ({ x: event.clientX, y: event.clientY }))
-        )
-        .subscribe((e) => {
-          this.mousePosX = e.x;
-          this.mousePosY = e.y;
-
-          this.moveFish();
-        });
-    }
+        this.moveFish();
+      });
   }
 
   moveFish(): void {
