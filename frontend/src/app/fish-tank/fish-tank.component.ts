@@ -16,8 +16,8 @@ export class FishTankComponent implements OnInit, OnDestroy {
   fishStyle: any = {
     position: 'absolute',
     transform: 'rotate(0deg)',
-    left: '0px',
-    top: '0px',
+    left: '100px',
+    top: '100px',
     transition: 'transform 2s, left 2s, top 2s',
   };
   fishSub: Subscription = null as any;
@@ -49,13 +49,13 @@ export class FishTankComponent implements OnInit, OnDestroy {
 
     this.fishService.getFish();
 
-    if (
-      !this.fishIntervalMovement &&
-      +this.fish.currentHungerLevel < +this.fish.gainWeightHungerLevel + 6
-    ) {
-      this.moveFishInterval();
-      this.fishIntervalMovement = true;
-    }
+    // if (
+    //   !this.fishIntervalMovement &&
+    //   +this.fish.currentHungerLevel < +this.fish.gainWeightHungerLevel + 6
+    // ) {
+    //   this.moveFishInterval();
+    //   this.fishIntervalMovement = true;
+    // }
 
     this.mousePosSubscription = fromEvent<MouseEvent>(document, 'mousemove')
       .pipe(
