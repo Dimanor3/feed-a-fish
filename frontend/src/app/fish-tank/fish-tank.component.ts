@@ -55,6 +55,8 @@ export class FishTankComponent implements OnInit, OnDestroy {
         this.mousePosX = e.x;
         this.mousePosY = e.y;
 
+        console.log(this.fish.currentHungerLevel);
+
         if (
           +this.fish.currentHungerLevel >=
           +this.fish.gainWeightHungerLevel + 6
