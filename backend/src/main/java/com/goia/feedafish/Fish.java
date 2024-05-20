@@ -290,7 +290,11 @@ public class Fish {
                 System.out.println("Current hunger level decremented. New hunger level: " + this.currentHungerLevel);
 
                 if (this.currentHungerLevel < this.gainWeightHungerLevel) {
-                    this.weight += 1 + Math.floor((this.gainWeightHungerLevel - this.currentHungerLevel) / 5.0);
+                    if (this.currentHungerLevel < 0) {
+                        this.weight += 1 + Math.floor((this.gainWeightHungerLevel + this.currentHungerLevel) / 5.0);
+                    } else {
+                        this.weight += 1 + Math.floor((this.gainWeightHungerLevel - this.currentHungerLevel) / 5.0);
+                    }
                     System.out.println(
                             "Hunger level below gainWeightHungerLevel. Weight incremented. New weight: " + this.weight);
                 }
