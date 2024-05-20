@@ -128,7 +128,7 @@ public class TestController {
         return ResponseEntity.ok("{\"server_ip\": \"" + serverIp + "\"}");
     }
 
-    @Scheduled(fixedRate = 2000) // Schedule this method to run every hour
+    @Scheduled(fixedRate = 3600000) // Schedule this method to run every hour
     public void incrementHungerOfLatestFish() {
         try {
             Fish latestFish = Fish.getLatestFish(dataSource);
