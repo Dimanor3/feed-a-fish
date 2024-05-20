@@ -113,7 +113,7 @@ export class FishService implements OnDestroy {
       )
       .subscribe((response) => {
         if (response === 'dead') {
-          this.fishChanged.next(null as any);
+          this.fishKilled.next(null as any);
           return;
         }
 
