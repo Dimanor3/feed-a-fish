@@ -54,6 +54,11 @@ export class FishService implements OnDestroy {
           })
         )
         .subscribe((response) => {
+          if (response === 'dead') {
+            this.fishChanged.next(null as any);
+            return;
+          }
+
           const res: Fish = JSON.parse(response);
 
           const createdAt: Date = new Date(res.createdAt);

@@ -23,6 +23,7 @@ export class FishTankComponent implements OnInit, OnDestroy {
   fishSub: Subscription = null as any;
   fish: FishStatus = null as any;
   fishWidth: String = '10%';
+  fishDead: boolean = false;
 
   fishInterval: Number = null as any;
   fishIntervalMovement: boolean = false;
@@ -41,9 +42,14 @@ export class FishTankComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.fishSub = this.fishService.fishChanged.subscribe(
       (fish: FishStatus) => {
-        this.fish = fish;
-        this.updateWidth();
-        this.fishWidth = this.width + '%';
+        if (fish === null) {
+          this.fishDead = true;
+        } else {
+          this.fishDead = false;
+          this.fish = fish;
+          this.updateWidth();
+          this.fishWidth = this.width + '%';
+        }
       }
     );
 
