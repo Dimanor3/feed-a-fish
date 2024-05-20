@@ -21,6 +21,7 @@ export class FishTankComponent implements OnInit, OnDestroy {
     transition: 'transform 2s, left 2s, top 2s',
   };
   fishSub: Subscription = null as any;
+  fishKilledSub: Subscription = null as any;
   fish: FishStatus = null as any;
   fishWidth: String = '10%';
   fishDead: boolean = false;
@@ -51,6 +52,22 @@ export class FishTankComponent implements OnInit, OnDestroy {
           this.fish = fish;
           this.updateWidth();
           this.fishWidth = this.width + '%';
+        }
+      }
+    );
+
+    this.fishKilledSub = this.fishService.fishKilled.subscribe(
+      (fish: FishStatus) => {
+        if (fish === null) {
+          this.killedFish = true;
+          this.fishDead = true;
+
+          this.fish = null as any;
+
+          this.fishSub.unsubscribe();
+          this.fishKilledSub.unsubscribe();
+          this.mousePosSubscription.unsubscribe();
+          clearInterval(+this.fishInterval);
         }
       }
     );
@@ -133,9 +150,8 @@ export class FishTankComponent implements OnInit, OnDestroy {
   }
 
   feedFish() {
-    if (!this.fishService.feedFish()) {
-      this.killedFish = true;
-      this.fishDead = true;
+    if (this.killedFish) {
+      return;
     }
 
     this.updateWidth();
@@ -159,5 +175,6 @@ export class FishTankComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.mousePosSubscription.unsubscribe();
     this.fishSub.unsubscribe();
+    this.fishKilledSub.unsubscribe();
   }
 }
