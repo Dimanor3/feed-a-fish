@@ -48,7 +48,10 @@ export class FishTankComponent implements OnInit, OnDestroy {
       (fish: FishStatus) => {
         if (fish === null) {
           this.fishDead = true;
+          console.log('testing');
         } else {
+          console.log('testing2');
+
           this.fishDead = false;
           this.killedFish = false;
           this.fish = fish;
@@ -62,8 +65,6 @@ export class FishTankComponent implements OnInit, OnDestroy {
     );
 
     if (!this.fishDead) {
-      console.log('testing');
-
       this.fishKilledSub = this.fishService.fishKilled.subscribe(
         (fish: FishStatus) => {
           if (fish === null) {
