@@ -1,4 +1,4 @@
-<div id="fish" class="left-1/2 top-1/2" [ngStyle]="fishStyle" [style.width]="fishWidth" style="position: absolute; transition: transform 5s, left 5s, top 5s;">
+<div id="fish" [ngStyle]="fishStyle" [style.width]="fishWidth" style="position: absolute; left: 50%; top: 50%; transition: transform 5s, left 5s, top 5s;">
     <p class="text-white text-center font-bold">{{ fish.name }}</p>
     <img class="mx-auto" [src]="fish.imagePath" (click)="feedFish()">
 </div>
