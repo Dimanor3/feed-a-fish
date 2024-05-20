@@ -49,14 +49,6 @@ export class FishTankComponent implements OnInit, OnDestroy {
 
     this.fishService.getFish();
 
-    // if (
-    //   !this.fishIntervalMovement &&
-    //   +this.fish.currentHungerLevel < +this.fish.gainWeightHungerLevel + 6
-    // ) {
-    //   this.moveFishInterval();
-    //   this.fishIntervalMovement = true;
-    // }
-
     this.mousePosSubscription = fromEvent<MouseEvent>(document, 'mousemove')
       .pipe(
         throttleTime(100),
