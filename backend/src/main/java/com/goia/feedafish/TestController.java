@@ -111,7 +111,6 @@ public class TestController {
                         .body("{\"error\": \"Latest fish is not alive\"}");
             }
             if (!latestFish.feedFish(dataSource)) {
-                System.out.println("working I am");
                 return ResponseEntity.status(HttpStatus.CREATED).body("dead");
             }
 
