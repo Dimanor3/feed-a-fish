@@ -101,7 +101,7 @@ export class FishService implements OnDestroy {
       });
   }
 
-  public feedFish() {
+  public feedFish(): boolean {
     this.feedFishSub = this.http
       .get(this.url[0] + this.url[3], { responseType: 'text' })
       .pipe(
@@ -111,8 +111,15 @@ export class FishService implements OnDestroy {
         })
       )
       .subscribe((response) => {
+        if (response === 'dead') {
+          return false;
+        }
+
         this.getFish();
+        return true;
       });
+
+    return true;
   }
 
   private handleError(errorRes: HttpErrorResponse) {

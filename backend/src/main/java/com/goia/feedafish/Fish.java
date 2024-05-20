@@ -270,7 +270,7 @@ public class Fish {
     // every point of hunger over gainWeightHungerLevel, increment weight. If over
     // maxWeight, return a json response that contains "alive": false (also update
     // the database.
-    public Fish feedFish(DataSource dataSource) {
+    public boolean feedFish(DataSource dataSource) {
         System.out.println("Starting feedFish function for fish ID: " + this);
         // if (this.id == null) {
         // System.out.println("Error: Fish ID is null. Cannot feed fish without a valid
@@ -299,6 +299,7 @@ public class Fish {
                 if (this.weight > this.maxWeight || this.weight < this.minWeight) {
                     this.alive = false; // Fish dies if it exceeds max weight
                     System.out.println("Weight out of bounds. Fish is now dead. Alive status: " + this.alive);
+                    return false;
                 }
 
                 // Update the fish record in the database using updateInDatabase method
@@ -313,7 +314,7 @@ public class Fish {
             latestFishLock.writeLock().unlock();
         }
         System.out.println("Ending feedFish function for fish ID: " + this.id);
-        return this;
+        return true;
     }
 
     public void makeHungrier(DataSource dataSource) {
