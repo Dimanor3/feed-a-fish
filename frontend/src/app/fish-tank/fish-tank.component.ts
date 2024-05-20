@@ -55,31 +55,25 @@ export class FishTankComponent implements OnInit, OnDestroy {
         this.mousePosX = e.x;
         this.mousePosY = e.y;
 
-        console.log(this.fish.currentHungerLevel);
-
-        if (
-          +this.fish.currentHungerLevel >=
-          +this.fish.gainWeightHungerLevel + 6
-        ) {
-          this.moveFish();
-        }
+        this.moveFish();
       });
-
-    if (+this.fish.currentHungerLevel < +this.fish.gainWeightHungerLevel + 6) {
-      this.moveFishInterval();
-    }
-
-    console.log(this.fish.imagePath);
   }
 
   moveFish(): void {
     const fish = document.getElementById('fish');
 
     if (fish) {
-      // this.moveFishTo(randomX, randomY);
+      if (
+        +this.fish.currentHungerLevel >=
+        +this.fish.gainWeightHungerLevel + 6
+      ) {
+        // this.moveFishTo(randomX, randomY);
 
-      fish.style.left = this.mousePosX - fish.offsetWidth / 2 + 'px';
-      fish.style.top = this.mousePosY - fish.offsetHeight / 2 + 'px';
+        fish.style.left = this.mousePosX - fish.offsetWidth / 2 + 'px';
+        fish.style.top = this.mousePosY - fish.offsetHeight / 2 + 'px';
+      } else {
+        this.moveFishInterval();
+      }
     }
   }
 
