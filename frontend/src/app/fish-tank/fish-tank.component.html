@@ -1,5 +1,7 @@
-<div *ngIf="fishDead" class="flex h-screen m-auto">
-    <h2>The Fish is Dead! Come back at 11:11 to spawn and feed a new one.</h2>
+<div *ngIf="fishDead" class="flex h-screen">
+    <div class="m-auto">
+        <h2>The Fish is Dead! Come back at 11:11 to spawn and feed a new one.</h2>
+    </div>
 </div>
 <div id="fish" [ngStyle]="fishStyle" [style.width]="fishWidth" style="position: absolute; left: 100px; top: 100px; transition: transform 5s, left 5s, top 5s;" *ngIf="!fishDead">
     <p class="text-white text-center font-bold">{{ fish.name }}</p>
