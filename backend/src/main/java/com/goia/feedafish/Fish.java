@@ -294,8 +294,42 @@ public class Fish {
                     System.out.println(
                             "Hunger level below gainWeightHungerLevel. Weight incremented. New weight: " + this.weight);
                 }
+
+                // Check if the weight exceeds the maximum weight
+                if (this.weight > this.maxWeight || this.weight < this.minWeight) {
+                    this.alive = false; // Fish dies if it exceeds max weight
+                    System.out.println("Weight out of bounds. Fish is now dead. Alive status: " + this.alive);
+                }
+
+                // Update the fish record in the database using updateInDatabase method
+                System.out.println("Fish record updated in the database.");
+                this.updateInDatabase(dataSource);
+            } catch (SQLException e) {
+                System.out.println("Error updating fish in database: " + e.getMessage());
+            }
+        }
+        finally
+        {
+            latestFishLock.writeLock().unlock();
+        }
+        System.out.println("Ending feedFish function for fish ID: " + this.id);
+        return this;
+    }
+
+    public void makeHungrier(DataSource dataSource) {
+        try {
+            // Make sure we don't d multiple writes at once
+            latestFishLock.writeLock().lock();
+            // Make sure the fish hasn't updated since we last got it
+            getLatestFish(dataSource, this);
+
+            try (Connection conn = dataSource.getConnection()) {
+                // Increment current hunger level
+                this.currentHungerLevel += 1;
+                System.out.println("Current hunger level incremented. New hunger level: " + this.currentHungerLevel);
+
                 if (this.currentHungerLevel > this.loseWeightHungerLevel) {
-                    this.weight -= 1;
+                    this.weight -= 1 + Math.floor((this.currentHungerLevel - this.loseWeightHungerLevel) / 5.0);
                     System.out.println(
                             "Hunger level above loseWeightHungerLevel. Weight decremented. New weight: " + this.weight);
                 }
@@ -318,7 +352,6 @@ public class Fish {
             latestFishLock.writeLock().unlock();
         }
         System.out.println("Ending feedFish function for fish ID: " + this.id);
-        return this;
     }
 
     public static List<Fish> getAllDeadFish(DataSource dataSource) {

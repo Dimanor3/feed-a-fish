@@ -128,13 +128,14 @@ public class TestController {
         return ResponseEntity.ok("{\"server_ip\": \"" + serverIp + "\"}");
     }
 
-    @Scheduled(fixedRate = 3600000) // Schedule this method to run every hour
+    @Scheduled(fixedRate = 5000) // Schedule this method to run every hour
     public void incrementHungerOfLatestFish() {
         try {
             Fish latestFish = Fish.getLatestFish(dataSource);
             if (latestFish != null && latestFish.getAlive()) {
                 int previousHungerLevel = latestFish.getCurrentHungerLevel();
-                latestFish.setCurrentHungerLevel(previousHungerLevel + 1);
+//                latestFish.setCurrentHungerLevel(previousHungerLevel + 1);
+                latestFish.makeHungrier(dataSource);
                 latestFish.saveToDatabase(dataSource);
                 System.out.println("Hunger level incremented for fish ID: " + latestFish.getId() + 
                                    ", Name: " + latestFish.getName() + 
