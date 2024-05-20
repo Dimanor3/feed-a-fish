@@ -300,6 +300,8 @@ public class Fish {
                 if (this.weight > this.maxWeight || this.weight < this.minWeight) {
                     this.alive = false; // Fish dies if it exceeds max weight
                     System.out.println("Weight out of bounds. Fish is now dead. Alive status: " + this.alive);
+                    this.updateInDatabase(dataSource);
+                    latestFishLock.writeLock().unlock();
                     return false;
                 }
 
