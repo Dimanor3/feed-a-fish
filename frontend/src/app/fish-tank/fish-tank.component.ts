@@ -53,6 +53,9 @@ export class FishTankComponent implements OnInit, OnDestroy {
           this.updateWidth();
           this.fishWidth = this.width + '%';
         }
+
+        console.log('dead fish: ' + this.fishDead);
+        console.log('killed fish: ' + this.killedFish);
       }
     );
 
@@ -61,6 +64,9 @@ export class FishTankComponent implements OnInit, OnDestroy {
         if (fish === null) {
           this.killedFish = true;
           this.fishDead = true;
+
+          console.log('dead fish: ' + this.fishDead);
+          console.log('killed fish: ' + this.killedFish);
 
           this.fish = null as any;
 
