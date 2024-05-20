@@ -23,6 +23,7 @@ export class FishTankComponent implements OnInit, OnDestroy {
   fishSub: Subscription = null as any;
   fish: FishStatus = null as any;
   fishWidth: String = '10%';
+  fishInterval: boolean = false;
 
   private width: Number = 3;
   private minWidth: Number = 3;
@@ -67,12 +68,17 @@ export class FishTankComponent implements OnInit, OnDestroy {
         +this.fish.currentHungerLevel >=
         +this.fish.gainWeightHungerLevel + 6
       ) {
+        this.fishInterval = false;
+
         // this.moveFishTo(randomX, randomY);
 
         fish.style.left = this.mousePosX - fish.offsetWidth / 2 + 'px';
         fish.style.top = this.mousePosY - fish.offsetHeight / 2 + 'px';
       } else {
-        this.moveFishInterval();
+        if (!this.fishInterval) {
+          this.moveFishInterval();
+          this.fishInterval = true;
+        }
       }
     }
   }
