@@ -150,6 +150,11 @@ export class FishTankComponent implements OnInit, OnDestroy {
   }
 
   feedFish() {
+    if (this.killedFish) {
+      return;
+    }
+
+    this.fishService.feedFish();
     this.updateWidth();
     this.fishWidth = this.width + '%';
   }
