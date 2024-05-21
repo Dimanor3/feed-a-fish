@@ -3,6 +3,7 @@ package com.goia.feedafish;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Optional;
 
 import javax.sql.DataSource;
 
@@ -67,15 +68,15 @@ public class TestController {
 */
     @GetMapping(value = "/get/latest", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getLatestOrCreateFishEndpoint(
-            @RequestParam(name = "hours", required = true) Integer hours,
-            @RequestParam(name = "minutes", required = true) Integer minutes) {
+            @RequestParam(name = "hours", required = false) Optional<Integer> hours,
+            @RequestParam(name = "minutes", required = false) Optional<Integer> minutes) {
         try {
             Fish latestFish = Fish.getLatestFish(dataSource);
             if (latestFish == null) {
 //                LocalDateTime curTime = LocalDateTime.now(zoneId);
 //                System.out.println(curTime.getHour() + " " + curTime.getMinute());
                 System.out.println(hours + " " + minutes);
-                if (hours == 11 && minutes == 11) {
+                if (hours.orElse(0) == 11 && minutes.orElse(0) == 11) {
 //                if (true) {
                     // If no latest fish exists, generate a new one
                     latestFish = Fish.generateRandomFish();
@@ -85,7 +86,7 @@ public class TestController {
                     return ResponseEntity.status(HttpStatus.CREATED).body("dead");
                 }
             }
-            return ResponseEntity.ok(latestFish != null ? latestFish.toJson() : "dead");
+            return ResponseEntity.ok(latestFish.toJson());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("{\"error\": \"" + e.getMessage() + "\"}");
@@ -105,9 +106,9 @@ public class TestController {
 
     @GetMapping(value = "/feed/latest", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> feedLatestFishEndpoint(
-            @RequestParam(name = "hours", required = true) Integer hours,
-            @RequestParam(name = "minutes", required = true) Integer minutes) {
-        if (hours == 11 && minutes == 11) {
+            @RequestParam(name = "hours", required = false) Optional<Integer> hours,
+            @RequestParam(name = "minutes", required = false) Optional<Integer> minutes) {
+        if (hours.orElse(0) == 11 && minutes.orElse(0) == 11) {
             try {
                 Fish latestFish = Fish.getLatestFish(dataSource);
                 if (latestFish == null) {
