@@ -65,14 +65,16 @@ public class TestController {
     }
 
     @GetMapping(value = "/get/latest", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> getLatestOrCreateFishEndpoint(ZoneId zoneId) {
+    public ResponseEntity<String> getLatestOrCreateFishEndpoint(
+            @RequestParam(name = "hours", required = true) Integer hours,
+            @RequestParam(name = "minutes", required = true) Integer minutes) {
         try {
             Fish latestFish = Fish.getLatestFish(dataSource);
             if (latestFish == null) {
-                LocalDateTime curTime = LocalDateTime.now(zoneId);
-                System.out.println(curTime.getHour() + " " + curTime.getMinute());
-//                if (curTime.getHour() == 11 && curTime.getMinute() == 11) {
-                if (true) {
+//                LocalDateTime curTime = LocalDateTime.now(zoneId);
+//                System.out.println(curTime.getHour() + " " + curTime.getMinute());
+                if (hours == 11 && minutes == 11) {
+//                if (true) {
                     // If no latest fish exists, generate a new one
                     latestFish = Fish.generateRandomFish();
                     latestFish.saveToDatabase(dataSource);
@@ -81,7 +83,7 @@ public class TestController {
                     return ResponseEntity.status(HttpStatus.CREATED).body("dead");
                 }
             }
-            return ResponseEntity.ok(latestFish != null ? latestFish.toJson() : "{}");
+            return ResponseEntity.ok(latestFish != null ? latestFish.toJson() : "dead");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("{\"error\": \"" + e.getMessage() + "\"}");

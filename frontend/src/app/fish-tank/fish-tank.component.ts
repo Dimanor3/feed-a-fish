@@ -26,6 +26,7 @@ export class FishTankComponent implements OnInit, OnDestroy {
   fishWidth: String = '10%';
   fishDead: boolean = false;
   killedFish: boolean = false;
+  canFeedFish: boolean = true;
   fishName: String = '';
   fishImagePath: String = '';
 
@@ -68,6 +69,14 @@ export class FishTankComponent implements OnInit, OnDestroy {
         }
       }
     );
+
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+
+    if (hours === 11 && minutes === 11) {
+      this.canFeedFish = true;
+    }
   }
 
   initalizeSubscriptions() {
@@ -166,13 +175,23 @@ export class FishTankComponent implements OnInit, OnDestroy {
   }
 
   feedFish() {
-    if (this.killedFish) {
-      return;
-    }
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
 
-    this.fishService.feedFish();
-    this.updateWidth();
-    this.fishWidth = this.width + '%';
+    if (hours === 11 && minutes === 11) {
+      this.canFeedFish = true;
+
+      if (this.killedFish) {
+        return;
+      }
+
+      this.fishService.feedFish();
+      this.updateWidth();
+      this.fishWidth = this.width + '%';
+    } else {
+      this.canFeedFish = false;
+    }
   }
 
   updateWidth() {

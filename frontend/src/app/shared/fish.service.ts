@@ -1,4 +1,8 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpParams,
+} from '@angular/common/http';
 import { Injectable, OnDestroy } from '@angular/core';
 import { catchError, tap } from 'rxjs/operators';
 import { Subscription, Subject, throwError } from 'rxjs';
@@ -42,10 +46,17 @@ export class FishService implements OnDestroy {
     const hours = now.getHours();
     const minutes = now.getMinutes();
 
-    if (hours === 11 && minutes === 11) {
-      // if (true) {
+    let params = new HttpParams();
+    params = params.append('hours', hours);
+    params = params.append('minutes', minutes);
+
+    // if (hours === 11 && minutes === 11) {
+    if (true) {
       this.getFishSub = this.http
-        .get(this.url[0] + this.url[1], { responseType: 'text' })
+        .get(this.url[0] + this.url[1], {
+          responseType: 'text',
+          params: params,
+        })
         .pipe(
           catchError(this.handleError),
           tap((resData) => {
@@ -101,28 +112,22 @@ export class FishService implements OnDestroy {
   }
 
   public feedFish() {
-    const now = new Date();
-    const hours = now.getHours();
-    const minutes = now.getMinutes();
+    this.feedFishSub = this.http
+      .get(this.url[0] + this.url[3], { responseType: 'text' })
+      .pipe(
+        catchError(this.handleError),
+        tap((resData) => {
+          console.log(resData);
+        })
+      )
+      .subscribe((response) => {
+        if (response === 'dead') {
+          this.fishKilled.next(null as any);
+          return;
+        }
 
-    if (hours === 11 && minutes === 11) {
-      this.feedFishSub = this.http
-        .get(this.url[0] + this.url[3], { responseType: 'text' })
-        .pipe(
-          catchError(this.handleError),
-          tap((resData) => {
-            console.log(resData);
-          })
-        )
-        .subscribe((response) => {
-          if (response === 'dead') {
-            this.fishKilled.next(null as any);
-            return;
-          }
-
-          this.getFish();
-        });
-    }
+        this.getFish();
+      });
   }
 
   private handleError(errorRes: HttpErrorResponse) {
