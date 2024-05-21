@@ -3,7 +3,7 @@
         <h2 *ngIf="killedFish && fishDead">You <span class="text-red font-bold">KILLED</span> the Fish!</h2>
         <h2 *ngIf="fishDead" >The Fish is Dead! Come back at 11:11 to spawn and feed a new one.</h2>
         <h2 *ngIf="canFeedFish">Feel free to feed the fish!</h2>
-        <h2 *ngIf="!canFeedFish">Come back at 11:11 to feed the fish!</h2>
+        <h2 *ngIf="!canFeedFish && !fishDead && !killedFish">Come back at 11:11 to feed the fish!</h2>
     </div>
 </div>
 <div id="fish" [ngStyle]="fishStyle" [style.width]="fishWidth" style="position: absolute; left: 100px; top: 100px; transition: transform 5s, left 5s, top 5s;" *ngIf="!fishDead || !killedFish">
