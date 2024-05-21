@@ -71,8 +71,8 @@ public class TestController {
             if (latestFish == null) {
                 LocalDateTime curTime = LocalDateTime.now(zoneId);
                 System.out.println(curTime.getHour() + " " + curTime.getMinute());
-                if (curTime.getHour() == 11 && curTime.getMinute() == 11) {
-//                if (true) {
+//                if (curTime.getHour() == 11 && curTime.getMinute() == 11) {
+                if (true) {
                     // If no latest fish exists, generate a new one
                     latestFish = Fish.generateRandomFish();
                     latestFish.saveToDatabase(dataSource);

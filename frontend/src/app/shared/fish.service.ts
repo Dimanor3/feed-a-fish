@@ -42,10 +42,8 @@ export class FishService implements OnDestroy {
     const hours = now.getHours();
     const minutes = now.getMinutes();
 
-    console.log(this.url[0] + this.url[1]);
-
-    // if (hours === 11 && minutes === 11) {
-    if (true) {
+    if (hours === 11 && minutes === 11) {
+      // if (true) {
       this.getFishSub = this.http
         .get(this.url[0] + this.url[1], { responseType: 'text' })
         .pipe(
@@ -103,22 +101,28 @@ export class FishService implements OnDestroy {
   }
 
   public feedFish() {
-    this.feedFishSub = this.http
-      .get(this.url[0] + this.url[3], { responseType: 'text' })
-      .pipe(
-        catchError(this.handleError),
-        tap((resData) => {
-          console.log(resData);
-        })
-      )
-      .subscribe((response) => {
-        if (response === 'dead') {
-          this.fishKilled.next(null as any);
-          return;
-        }
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
 
-        this.getFish();
-      });
+    if (hours === 11 && minutes === 11) {
+      this.feedFishSub = this.http
+        .get(this.url[0] + this.url[3], { responseType: 'text' })
+        .pipe(
+          catchError(this.handleError),
+          tap((resData) => {
+            console.log(resData);
+          })
+        )
+        .subscribe((response) => {
+          if (response === 'dead') {
+            this.fishKilled.next(null as any);
+            return;
+          }
+
+          this.getFish();
+        });
+    }
   }
 
   private handleError(errorRes: HttpErrorResponse) {
