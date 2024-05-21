@@ -112,8 +112,19 @@ export class FishService implements OnDestroy {
   }
 
   public feedFish() {
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+
+    let params = new HttpParams();
+    params = params.append('hours', hours);
+    params = params.append('minutes', minutes);
+
     this.feedFishSub = this.http
-      .get(this.url[0] + this.url[3], { responseType: 'text' })
+      .get(this.url[0] + this.url[3], {
+        responseType: 'text',
+        params: params
+      })
       .pipe(
         catchError(this.handleError),
         tap((resData) => {
