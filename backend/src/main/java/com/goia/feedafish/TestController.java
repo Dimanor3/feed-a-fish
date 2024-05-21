@@ -29,6 +29,7 @@ public class TestController {
         return "Greetings from Spring Boot!";
     }
 
+/* Not needed since get/latest generates as needed
     @PostMapping(value = "/generate/fish", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> generateFishEndpoint(@RequestParam(required = false) String name,
                                      @RequestParam(required = false) Boolean alive,
@@ -63,7 +64,7 @@ public class TestController {
         newFish.saveToDatabase(dataSource);
         return ResponseEntity.ok(newFish.toJson());
     }
-
+*/
     @GetMapping(value = "/get/latest", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getLatestOrCreateFishEndpoint(
             @RequestParam(name = "hours", required = true) Integer hours,
@@ -103,26 +104,31 @@ public class TestController {
     }
 
     @GetMapping(value = "/feed/latest", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> feedLatestFishEndpoint() {
-        try {
-            Fish latestFish = Fish.getLatestFish(dataSource);
-            if (latestFish == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body("{\"error\": \"No latest fish found\"}");
-            }
-            if (!latestFish.getAlive()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("{\"error\": \"Latest fish is not alive\"}");
-            }
-            if (!latestFish.feedFish(dataSource)) {
-                return ResponseEntity.status(HttpStatus.CREATED).body("dead");
-            }
+    public ResponseEntity<String> feedLatestFishEndpoint(
+            @RequestParam(name = "hours", required = true) Integer hours,
+            @RequestParam(name = "minutes", required = true) Integer minutes) {
+        if (hours == 11 && minutes == 11) {
+            try {
+                Fish latestFish = Fish.getLatestFish(dataSource);
+                if (latestFish == null) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                            .body("{\"error\": \"No latest fish found\"}");
+                }
+                if (!latestFish.getAlive()) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body("{\"error\": \"Latest fish is not alive\"}");
+                }
+                if (!latestFish.feedFish(dataSource)) {
+                    return ResponseEntity.status(HttpStatus.CREATED).body("dead");
+                }
 
-            return ResponseEntity.ok(latestFish.toJson());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("{\"error\": \"" + e.getMessage() + "\"}");
+                return ResponseEntity.ok(latestFish.toJson());
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("{\"error\": \"" + e.getMessage() + "\"}");
+            }
         }
+        return ResponseEntity.ok("{}");
     }
 
     @GetMapping(value = "/ip", produces = MediaType.APPLICATION_JSON_VALUE)
