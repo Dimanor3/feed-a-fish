@@ -73,6 +73,7 @@ public class TestController {
             if (latestFish == null) {
 //                LocalDateTime curTime = LocalDateTime.now(zoneId);
 //                System.out.println(curTime.getHour() + " " + curTime.getMinute());
+                System.out.println(hours + " " + minutes);
                 if (hours == 11 && minutes == 11) {
 //                if (true) {
                     // If no latest fish exists, generate a new one

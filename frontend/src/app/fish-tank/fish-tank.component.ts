@@ -26,7 +26,7 @@ export class FishTankComponent implements OnInit, OnDestroy {
   fishWidth: String = '10%';
   fishDead: boolean = false;
   killedFish: boolean = false;
-  canFeedFish: boolean = true;
+  canFeedFish: boolean = false;
   fishName: String = '';
   fishImagePath: String = '';
 
