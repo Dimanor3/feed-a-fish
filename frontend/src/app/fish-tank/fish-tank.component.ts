@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription, fromEvent } from 'rxjs';
-import { throttleTime, map } from 'rxjs/operators';
+import { throttleTime, map, mergeMap } from 'rxjs/operators';
 import { FishService } from '../shared/fish.service';
 import { FishStatus } from '../shared/fish-status.model';
 
@@ -20,8 +20,11 @@ export class FishTankComponent implements OnInit, OnDestroy {
     top: '100px',
     transition: 'transform 2s, left 2s, top 2s',
   };
+  
   fishSub: Subscription = null as any;
   fishKilledSub: Subscription = null as any;
+  fishImageSub: Subscription = null as any;
+
   fish: FishStatus = null as any;
   fishWidth: String = '10%';
   fishDead: boolean = false;
@@ -58,7 +61,7 @@ export class FishTankComponent implements OnInit, OnDestroy {
           this.killedFish = false;
           this.fish = fish;
           this.fishName = fish.name;
-          this.fishImagePath = this.fishService.getFishImage(this.fish.name, this.fish.id.toString());
+          // this.fishImagePath = this.fishService.getFishImage(this.fish.name, this.fish.id.toString());
           this.updateWidth();
           this.fishWidth = this.width + '%';
 
@@ -66,6 +69,10 @@ export class FishTankComponent implements OnInit, OnDestroy {
             this.subscriptionsInitialized = true;
             this.initalizeSubscriptions();
           }
+
+          this.fishImageSub = this.fishService.getFishImage(this.fish.name, this.fish.id.toString()).subscribe((r) => {
+            this.fishImagePath = r;
+          });
         }
       }
     );
@@ -213,5 +220,6 @@ export class FishTankComponent implements OnInit, OnDestroy {
     this.mousePosSubscription.unsubscribe();
     this.fishSub.unsubscribe();
     this.fishKilledSub.unsubscribe();
+    this.fishImageSub.unsubscribe();
   }
 }

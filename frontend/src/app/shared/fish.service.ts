@@ -5,7 +5,7 @@ import {
 } from '@angular/common/http';
 import { Injectable, OnDestroy } from '@angular/core';
 import { catchError, tap } from 'rxjs/operators';
-import { Subscription, Subject, throwError } from 'rxjs';
+import { Subscription, Subject, throwError, Observable } from 'rxjs';
 import { FishStatus } from './fish-status.model';
 
 @Injectable({ providedIn: 'root' })
@@ -20,6 +20,7 @@ export class FishService implements OnDestroy {
   private getDeadSub: Subscription = null as any;
   private feedFishSub: Subscription = null as any;
   private fishImageSub: Subscription = null as any;
+  private fishImage = new Subject<String>();
   fishChanged = new Subject<FishStatus>();
   fishKilled = new Subject<FishStatus>();
 
@@ -122,7 +123,7 @@ export class FishService implements OnDestroy {
       });
   }
 
-  public getFishImage(name: String, id: String): String {
+  public getFishImage(name: String, id: String): Observable<String> {
     this.fishImageSub = this.http
             .get("https://sharpfish.billkarnavas.com/" + name + "-" + id)
             .pipe(catchError(this.handleError),
@@ -131,10 +132,14 @@ export class FishService implements OnDestroy {
               })
             )
             .subscribe((res) => {
-              return res;
+              console.log(res);
+              console.log("String: " + res);
+              
+              
+              this.fishImage.next(res.toString());
             });
 
-    return "";
+    return this.fishImage.asObservable();
   }
 
   private handleError(errorRes: HttpErrorResponse) {
