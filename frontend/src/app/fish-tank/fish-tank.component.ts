@@ -180,7 +180,7 @@ export class FishTankComponent implements OnInit, OnDestroy {
     const minutes = now.getMinutes();
 
     // if (hours === 11 && minutes === 11) {
-      if (true) {
+    if (true) {
       this.canFeedFish = true;
 
       if (this.killedFish) {

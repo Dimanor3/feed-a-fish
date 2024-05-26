@@ -108,8 +108,7 @@ public class TestController {
     public ResponseEntity<String> feedLatestFishEndpoint(
             @RequestParam(name = "hours", required = false) Optional<Integer> hours,
             @RequestParam(name = "minutes", required = false) Optional<Integer> minutes) {
-
-        if (hours.orElse(0) == 5 && minutes.orElse(0) == 15) {
+        if (hours.orElse(0) == 11 && minutes.orElse(0) == 11) {
             try {
                 Fish latestFish = Fish.getLatestFish(dataSource);
                 if (latestFish == null) {
