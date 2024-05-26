@@ -4,6 +4,7 @@ import { Subscription, fromEvent } from 'rxjs';
 import { throttleTime, map, mergeMap } from 'rxjs/operators';
 import { FishService } from '../shared/fish.service';
 import { FishStatus } from '../shared/fish-status.model';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-fish-tank',
@@ -31,7 +32,7 @@ export class FishTankComponent implements OnInit, OnDestroy {
   killedFish: boolean = false;
   canFeedFish: boolean = false;
   fishName: String = '';
-  fishImagePath: String = '';
+  fishImagePath: SafeHtml = null as any;
 
   fishInterval: Number = null as any;
   fishIntervalMovement: boolean = false;
@@ -47,7 +48,7 @@ export class FishTankComponent implements OnInit, OnDestroy {
 
   private mousePosSubscription: Subscription = null as any;
 
-  constructor(private fishService: FishService) {}
+  constructor(private fishService: FishService, private sanitizer: DomSanitizer) {}
 
   ngOnInit(): void {
     this.fishService.getFish();
@@ -71,7 +72,7 @@ export class FishTankComponent implements OnInit, OnDestroy {
           }
 
           this.fishImageSub = this.fishService.getFishImage(this.fish.name, this.fish.id.toString()).subscribe((r) => {
-            this.fishImagePath = r;
+            this.fishImagePath = this.sanitizer.bypassSecurityTrustHtml(r.toString());
           });
         }
       }
