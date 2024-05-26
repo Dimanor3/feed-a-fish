@@ -128,7 +128,7 @@ export class FishService implements OnDestroy {
             .get("https://sharpfish.billkarnavas.com/" + name + "-" + id, { responseType: 'text' })
             .pipe(catchError(this.handleError),
               tap((resData) => {
-                console.log(resData);
+                // console.log(resData);
               })
             )
             .subscribe((res) => {
