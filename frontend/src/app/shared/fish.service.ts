@@ -35,7 +35,7 @@ export class FishService implements OnDestroy {
     params = params.append('hours', hours);
     params = params.append('minutes', minutes);
 
-    // if (hours === 11 && minutes === 11) {
+    // if (hours === 11 && minutes === 11 || hours === 23 && minutes === 11) {
     if (true) {
       this.getFishSub = this.http
         .get(this.url[0] + this.url[1], {
