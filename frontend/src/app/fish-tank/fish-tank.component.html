@@ -8,5 +8,6 @@
 </div>
 <div id="fish" [ngStyle]="fishStyle" [style.width]="fishWidth" style="position: absolute; left: 100px; top: 100px; transition: transform 5s, left 5s, top 5s;" *ngIf="!fishDead || !killedFish">
     <p class="text-white text-center font-bold">{{ fishName }}</p>
-    <img class="mx-auto" [src]="fishImagePath" (click)="feedFish()">
+    {{ fishImagePath }}
+    <!-- <img class="mx-auto" [src]="fishImagePath" (click)="feedFish()"> -->
 </div>
