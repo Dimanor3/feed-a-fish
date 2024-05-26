@@ -132,11 +132,7 @@ export class FishService implements OnDestroy {
               })
             )
             .subscribe((res) => {
-              console.log(res);
-              console.log("String: " + res);
-              
-              
-              this.fishImage.next(res.toString());
+              this.fishImage.next(res.toString().replace("<?xml version=\"1.0\" standalone=\"no\"?> ", ''));
             });
 
     return this.fishImage.asObservable();
