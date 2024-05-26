@@ -125,7 +125,7 @@ export class FishService implements OnDestroy {
 
   public getFishImage(name: String, id: String): Observable<String> {
     this.fishImageSub = this.http
-            .get("https://sharpfish.billkarnavas.com/" + name + "-" + id)
+            .get("https://sharpfish.billkarnavas.com/" + name + "-" + id, { responseType: 'text' })
             .pipe(catchError(this.handleError),
               tap((resData) => {
                 console.log(resData);
