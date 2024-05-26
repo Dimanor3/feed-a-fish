@@ -187,8 +187,8 @@ export class FishTankComponent implements OnInit, OnDestroy {
     const hours = now.getHours();
     const minutes = now.getMinutes();
 
-    // if (hours === 11 && minutes === 11) {
-    if (true) {
+    if (hours === 11 && minutes === 11) {
+    // if (true) {
       this.canFeedFish = true;
 
       if (this.killedFish) {
