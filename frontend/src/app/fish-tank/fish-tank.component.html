@@ -8,5 +8,16 @@
 </div>
 <div id="fish" [ngStyle]="fishStyle" [style.width]="fishWidth" style="position: absolute; left: 100px; top: 100px; transition: transform 5s, left 5s, top 5s;" *ngIf="!fishDead || !killedFish">
     <p class="text-white text-center font-bold">{{ fishName }}</p>
-    <img class="mx-auto" [src]="fishImagePath" (click)="feedFish()">
+    <svg width="900" height="600" version="1.1" xmlns="http://www.w3.org/2000/svg" mask="url(#mouth)">
+        <mask id="mouth" maskContentUnits="userSpaceOnUse">
+            <rect fill="white" x="0" y="0" width="100%" height="100%" />
+            <polygon points="149,300,150,271.8293013272606,217.42956943164626,300,150,328.1706986727394" fill="black" />
+            <!-- don't mask eyes -->
+            <polygon points="267.1712639567814,216.85883963343315,246,195.68757567665176,224.8287360432186,216.85883963343315,246,238.03010359021454" fill="white" />
+        </mask>
+        <polygon points="389.22414223844316,300,503.8153213644987,135.45513507350097,491.9976844432781,300,503.8153213644987,464.54486492649903" fill="hsl(207, 100%, 50%)" />
+        <polygon points="450,300,300,92.1470990835829,150,300,300,540.279128325796" fill="hsl(162, 100%, 50%)" />
+        <polygon points="267.1712639567814,216.85883963343315,246,195.68757567665176,224.8287360432186,216.85883963343315,246,238.03010359021454" fill="hsl(207, 100%, 50%)" />
+    </svg>
+    <!-- <img class="mx-auto" [src]="fishImagePath" (click)="feedFish()"> -->
 </div>
