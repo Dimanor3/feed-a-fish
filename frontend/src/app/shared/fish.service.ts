@@ -72,7 +72,8 @@ export class FishService implements OnDestroy {
           const res: Fish = JSON.parse(response);
 
           const createdAt: Date = new Date(res.createdAt);
-          const imagePath: String = this.url[0] + res.imagePath;
+          // const imagePath: String = this.url[0] + res.imagePath;
+          const imagePath: String = "https://sharpfish.billkarnavas.com/";
           // console.log(imagePath);
 
           this.fishChanged.next(
