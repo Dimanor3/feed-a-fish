@@ -58,7 +58,7 @@ export class FishTankComponent implements OnInit, OnDestroy {
           this.killedFish = false;
           this.fish = fish;
           this.fishName = fish.name;
-          this.fishImagePath = fish.imagePath;
+          this.fishImagePath = this.fishService.getFishImage(this.fish.name, this.fish.id.toString());
           this.updateWidth();
           this.fishWidth = this.width + '%';
 
