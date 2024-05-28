@@ -6,6 +6,7 @@
   - weight: uniform minWeight+5 to maxWeight-5
   - gainWeightHungerLevel: uniform int 0-5
   - loseWeightHungerLevel: uniform int 18-24
+    - NOTE: ALL ANALYSIS BELOW IS WRONG: this is 18-23
   - hunger: uniform int gainWeightHungerLevel + 2 to loseWeightHungerLevel - 3
 
 Two things happen to affect a fish:
