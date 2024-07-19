@@ -30,7 +30,7 @@ public class TestController {
         return "Greetings from Spring Boot!";
     }
 
-// Not needed since get/latest generates as needed
+/* Not needed since get/latest generates as needed
     @PostMapping(value = "/generate/fish", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> generateFishEndpoint(@RequestParam(required = false) String name,
                                      @RequestParam(required = false) Boolean alive,
@@ -65,7 +65,7 @@ public class TestController {
         newFish.saveToDatabase(dataSource);
         return ResponseEntity.ok(newFish.toJson());
     }
-
+*/
     @GetMapping(value = "/get/latest", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getLatestOrCreateFishEndpoint(
             @RequestParam(name = "hours", required = false) Optional<Integer> hours,
@@ -76,7 +76,7 @@ public class TestController {
 //                LocalDateTime curTime = LocalDateTime.now(zoneId);
 //                System.out.println(curTime.getHour() + " " + curTime.getMinute());
                 System.out.println(hours + " " + minutes);
-                if (hours.orElse(0) == 11 && minutes.orElse(0) == 11 || hours.orElse(0) == 23 && minutes.orElse(0) == 11) {
+                if (hours.orElse(0) == 11 && minutes.orElse(0) == 11) {
 //                if (true) {
                     // If no latest fish exists, generate a new one
                     latestFish = Fish.generateRandomFish();
@@ -108,7 +108,7 @@ public class TestController {
     public ResponseEntity<String> feedLatestFishEndpoint(
             @RequestParam(name = "hours", required = false) Optional<Integer> hours,
             @RequestParam(name = "minutes", required = false) Optional<Integer> minutes) {
-        if (hours.orElse(0) == 11 && minutes.orElse(0) == 11 || hours.orElse(0) == 23 && minutes.orElse(0) == 11) {
+        if (hours.orElse(0) == 11 && minutes.orElse(0) == 11) {
             try {
                 Fish latestFish = Fish.getLatestFish(dataSource);
                 if (latestFish == null) {
