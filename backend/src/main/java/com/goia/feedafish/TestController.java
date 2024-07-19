@@ -30,7 +30,7 @@ public class TestController {
         return "Greetings from Spring Boot!";
     }
 
-// Not needed since get/latest generates as needed
+/* Not needed since get/latest generates as needed
     @PostMapping(value = "/generate/fish", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> generateFishEndpoint(@RequestParam(required = false) String name,
                                      @RequestParam(required = false) Boolean alive,
@@ -65,7 +65,7 @@ public class TestController {
         newFish.saveToDatabase(dataSource);
         return ResponseEntity.ok(newFish.toJson());
     }
-
+*/
     @GetMapping(value = "/get/latest", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getLatestOrCreateFishEndpoint(
             @RequestParam(name = "hours", required = false) Optional<Integer> hours,
