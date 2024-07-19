@@ -5,25 +5,8 @@ import {
 } from '@angular/common/http';
 import { Injectable, OnDestroy } from '@angular/core';
 import { catchError, tap } from 'rxjs/operators';
-import { Subscription, Subject, throwError } from 'rxjs';
+import { Subscription, Subject, throwError, Observable } from 'rxjs';
 import { FishStatus } from './fish-status.model';
-
-export interface Fish {
-  id: Number;
-  name: String;
-  createdAt: Date;
-  parentFishId: Number;
-  imagePath: String;
-  mood: String;
-  age: Number;
-  alive: Boolean;
-  weight: Number;
-  minWeight: Number;
-  maxWeight: Number;
-  currentHungerLevel: Number;
-  gainWeightHungerLevel: Number;
-  loseWeightHungerLevel: Number;
-}
 
 @Injectable({ providedIn: 'root' })
 export class FishService implements OnDestroy {
@@ -36,6 +19,8 @@ export class FishService implements OnDestroy {
   private getFishSub: Subscription = null as any;
   private getDeadSub: Subscription = null as any;
   private feedFishSub: Subscription = null as any;
+  private fishImageSub: Subscription = null as any;
+  private fishImage = new Subject<String>();
   fishChanged = new Subject<FishStatus>();
   fishKilled = new Subject<FishStatus>();
 
@@ -50,7 +35,7 @@ export class FishService implements OnDestroy {
     params = params.append('hours', hours);
     params = params.append('minutes', minutes);
 
-    // if (hours === 11 && minutes === 11) {
+    // if (hours === 11 && minutes === 11 || hours === 23 && minutes === 11) {
     if (true) {
       this.getFishSub = this.http
         .get(this.url[0] + this.url[1], {
@@ -69,11 +54,9 @@ export class FishService implements OnDestroy {
             return;
           }
 
-          const res: Fish = JSON.parse(response);
+          const res: FishStatus = JSON.parse(response);
 
           const createdAt: Date = new Date(res.createdAt);
-          const imagePath: String = this.url[0] + res.imagePath;
-          // console.log(imagePath);
 
           this.fishChanged.next(
             new FishStatus(
@@ -81,7 +64,6 @@ export class FishService implements OnDestroy {
               res.name,
               createdAt,
               res.parentFishId,
-              imagePath,
               res.mood,
               res.age,
               res.alive,
@@ -141,6 +123,21 @@ export class FishService implements OnDestroy {
       });
   }
 
+  public getFishImage(name: String, id: String): Observable<String> {
+    this.fishImageSub = this.http
+            .get("https://sharpfish.billkarnavas.com/" + name + "-" + id, { responseType: 'text' })
+            .pipe(catchError(this.handleError),
+              tap((resData) => {
+                // console.log(resData);
+              })
+            )
+            .subscribe((res) => {
+              this.fishImage.next(res.toString().replace("<?xml version=\"1.0\" standalone=\"no\"?> ", ''));
+            });
+
+    return this.fishImage.asObservable();
+  }
+
   private handleError(errorRes: HttpErrorResponse) {
     // let errorMessage = "An unkown error occurred!";
     console.log(errorRes);
@@ -156,5 +153,6 @@ export class FishService implements OnDestroy {
     this.getFishSub.unsubscribe();
     this.getDeadSub.unsubscribe();
     this.feedFishSub.unsubscribe();
+    this.fishImageSub.unsubscribe();
   }
 }

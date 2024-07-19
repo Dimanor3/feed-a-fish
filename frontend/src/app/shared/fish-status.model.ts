@@ -3,7 +3,6 @@ export class FishStatus {
   public name: String;
   public createdAt: Date;
   public parentFishId: Number;
-  public imagePath: String;
   public mood: String;
   public age: Number;
   public alive: Boolean;
@@ -19,7 +18,6 @@ export class FishStatus {
     name: String,
     createdAt: Date,
     parentFishId: Number,
-    imagePath: String,
     mood: String,
     age: Number,
     alive: Boolean,
@@ -34,7 +32,6 @@ export class FishStatus {
     this.name = name;
     this.createdAt = createdAt;
     this.parentFishId = parentFishId;
-    this.imagePath = imagePath;
     this.mood = mood;
     this.age = age;
     this.alive = alive;
