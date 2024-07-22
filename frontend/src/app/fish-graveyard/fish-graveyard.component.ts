@@ -1,10 +1,16 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 
 class Boid {
-  x: number = Math.random() * 100;
-  y: number = Math.random() * 100;
-  vx: number = (Math.random() * 10) - 5;
-  vy: number = (Math.random() * 10) - 5;
+  constructor(xmax: number = 100, ymax: number = 100, vmax: number = 10) {
+    this.x = Math.random() * xmax
+    this.y = Math.random() * ymax
+    this.vx = (Math.random() * vmax * 2) - vmax
+    this.vy = (Math.random() * vmax * 2) - vmax
+  }
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
   bin: {
     x: number
     y: number
@@ -26,18 +32,20 @@ export class FishGraveyardComponent implements AfterViewInit{
   ctx!: CanvasRenderingContext2D;
 
   //parameters these can be tuned maybe even create sliders for them if you want
-  avoidanceRate: number = .01;  //how much fish souls want to have their social distance
-  cohesionRate: number = .0005; //how much fish souls want to socialize
-  alignmentRate: number = .01 //how much fish souls want to engage in herd behavior
+  size: number = 2  //how big each fish soul is
 
-  visionRange: number = 100; //range in which fish souls will socialize and engage in herd behavior
-  protDist: number = 50;    //range in which fish souls will social distance
+  avoidanceRate: number =  0.15;  //how much fish souls want to have their social distance
+  cohesionRate: number =  0.0015; //how much fish souls want to socialize
+  alignmentRate: number =  0.15; //how much fish souls want to engage in herd behavior
 
-  marginDist: number = 40; //range from border where fish souls will start to try to turn around
+  visionRange: number = 20; //range in which fish souls will socialize and engage in herd behavior
+  protDist: number = 2;    //range in which fish souls will social distance
 
-  minSpd: number = 3; //slowest a fish soul will go
+  marginDist: number = 50; //range from border where fish souls will start to try to turn around
+
+  minSpd: number = 5; //slowest a fish soul will go
   maxSpd: number = 10;  //fastest a fish soul will go
-  turnRate: number = .2 //how fast fish souls will turn away from border
+  turnRate: number = 1 //how fast fish souls will turn away from border
 
   //calculated parameters
   visionSquared: number = this.visionRange*this.visionRange;
@@ -47,14 +55,12 @@ export class FishGraveyardComponent implements AfterViewInit{
   leftMargin: number = this.marginDist
   topmargin: number = this.marginDist;
 
-  numSouls: number = 100
+  numSouls: number = 1000
   boids: Boid[] = [];
   boidBins: Array<Array<Array<Boid>>> = [];
 
   constructor(){
-    for(let i = 0; i < this.numSouls; i++) {
-      this.boids.push(new Boid())
-    }
+
   }
   
   draw() {
@@ -81,17 +87,17 @@ export class FishGraveyardComponent implements AfterViewInit{
   }
 
   ngAfterViewInit(): void {
-
+    const context = this.canvas.nativeElement.getContext('2d')
     this.bottommargin = this.canvas.nativeElement.height - this.marginDist;
     this.rightMargin = this.canvas.nativeElement.width - this.marginDist;
-    const context = this.canvas.nativeElement.getContext('2d')
-
+    for(let i = 0; i < this.numSouls; i++) {
+      this.boids.push(new Boid(this.canvas.nativeElement.width, this.canvas.nativeElement.height, this.maxSpd))
+    }
     if(context != null){
       this.ctx = context
       this.ctx.fillStyle = "rgb(255 255 255 / 70%)";
       this.ctx.strokeStyle = "rgb(255 255 255 / 100%)";
     }
-
     window.requestAnimationFrame(this.draw.bind(this))
   }
 
@@ -124,7 +130,7 @@ export class FishGraveyardComponent implements AfterViewInit{
   drawBoids() {
     this.boids.forEach(boid => {
       this.ctx.beginPath();
-      this.ctx.arc(boid.x, boid.y, 10, 0, 2 * Math.PI);
+      this.ctx.arc(boid.x, boid.y, this.size, 0, 2 * Math.PI);
       this.ctx.fill();
     })
   }
@@ -217,13 +223,14 @@ export class FishGraveyardComponent implements AfterViewInit{
 
   avoidance(boid: Boid) {
     if (boid.x < this.leftMargin)
-      boid.vx = boid.vx + (this.leftMargin - boid.x)*this.turnRate
+      boid.vx += this.turnRate
     if (boid.x > this.rightMargin)
-      boid.vx = boid.vx - (boid.x - this.rightMargin)*this.turnRate
+      boid.vx -= this.turnRate
+
     if (boid.y < this.topmargin)
-      boid.vy = boid.vy + (this.bottommargin - boid.y)*this.turnRate
+      boid.vy += this.turnRate
     if (boid.y > this.bottommargin)
-      boid.vy = boid.vy - (boid.y - this.topmargin)*this.turnRate
+      boid.vy -= this.turnRate
   }
 
   limitSpeed(boid: Boid) {
