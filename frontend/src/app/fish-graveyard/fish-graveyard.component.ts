@@ -69,8 +69,8 @@ export class FishGraveyardComponent implements AfterViewInit {
 
   marginDist: number = 50; //range from border where fish souls will start to try to turn around
 
-  minSpd: number = 1; //slowest a fish soul will go
-  maxSpd: number = 2; //fastest a fish soul will go
+  minSpd: number = 2; //slowest a fish soul will go
+  maxSpd: number = 3; //fastest a fish soul will go
   maxAcc: number = 2; //fastest a fish soul can change their speed
   turnRate: number = 0.2; //how fast fish souls will turn away from border
 
@@ -82,7 +82,7 @@ export class FishGraveyardComponent implements AfterViewInit {
   leftMargin: number = this.marginDist;
   topmargin: number = this.marginDist;
 
-  numSouls: number = 5000;
+  numSouls: number = 1000;
   boids: Boid[] = [];
   boidBins: Array<Array<Array<Array<Boid>>>> = [];
 
