@@ -69,10 +69,10 @@ export class FishGraveyardComponent implements AfterViewInit {
 
   marginDist: number = 50; //range from border where fish souls will start to try to turn around
 
-  minSpd: number = 10; //slowest a fish soul will go
-  maxSpd: number = 20; //fastest a fish soul will go
-  maxAcc: number = 10; //fastest a fish soul can change their speed
-  turnRate: number = 1; //how fast fish souls will turn away from border
+  minSpd: number = 5; //slowest a fish soul will go
+  maxSpd: number = 10; //fastest a fish soul will go
+  maxAcc: number = 5; //fastest a fish soul can change their speed
+  turnRate: number = 0.5; //how fast fish souls will turn away from border
 
   //calculated parameters
   visionSquared: number = this.visionRange * this.visionRange;
