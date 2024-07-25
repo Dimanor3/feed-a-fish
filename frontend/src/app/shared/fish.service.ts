@@ -99,7 +99,7 @@ export class FishService implements OnDestroy {
 
         let deadFish: FishStatus[] = [];
 
-        console.log(res);
+        console.log('super test: ' + response);
 
         for (const r of res) {
           let createdAt: Date = new Date(r.createdAt);
