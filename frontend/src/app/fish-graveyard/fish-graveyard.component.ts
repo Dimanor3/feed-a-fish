@@ -58,7 +58,7 @@ class Boid {
   templateUrl: './fish-graveyard.component.html',
   styleUrl: './fish-graveyard.component.css',
 })
-export class FishGraveyardComponent implements AfterViewInit, OnInit {
+export class FishGraveyardComponent implements AfterViewInit {
   deadFish: Subscription = null as any;
 
   @ViewChild('canvas')
@@ -98,18 +98,6 @@ export class FishGraveyardComponent implements AfterViewInit, OnInit {
   boidBins: Array<Array<Array<Array<Boid>>>> = [];
 
   constructor(private fishService: FishService) {}
-
-  ngOnInit() {
-    this.fishService.getDeadFish();
-
-    this.deadFish = this.fishService.fishDead.subscribe(
-      (fish: FishStatus[]) => {
-        this.numSouls = fish.length;
-
-        console.log('soul count ' + this.numSouls);
-      }
-    );
-  }
 
   draw() {
     //clear animation frame
@@ -170,6 +158,16 @@ export class FishGraveyardComponent implements AfterViewInit, OnInit {
   }
 
   ngAfterViewInit(): void {
+    this.fishService.getDeadFish();
+
+    this.deadFish = this.fishService.fishDead.subscribe(
+      (fish: FishStatus[]) => {
+        this.numSouls = fish.length;
+
+        console.log('soul count ' + this.numSouls);
+      }
+    );
+
     const context = this.canvas.nativeElement.getContext('2d');
     this.bottommargin = this.canvas.nativeElement.height - this.marginDist;
     this.rightMargin = this.canvas.nativeElement.width - this.marginDist;

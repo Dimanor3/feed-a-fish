@@ -89,7 +89,7 @@ export class FishService implements OnDestroy {
       .pipe(
         catchError(this.handleError),
         tap((resData) => {
-          console.log(resData);
+          // console.log(resData);
         })
       )
       .subscribe((response) => {
