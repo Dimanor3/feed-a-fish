@@ -1,5 +1,4 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { FishService } from '../shared/fish.service';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { FishStatus } from '../shared/fish-status.model';
@@ -79,13 +78,13 @@ export class FishGraveyardComponent implements AfterViewInit {
   alignmentRate: number = 0.15; //how much fish souls want to engage in herd behavior
 
   visionRange: number = 50; //range in which fish souls will socialize and engage in herd behavior
-  protDist: number = 10; //range in which fish souls will social distance
+  protDist: number = 15; //range in which fish souls will social distance
 
   marginDist: number = 50; //range from border where fish souls will start to try to turn around
 
-  minSpd: number = 2; //slowest a fish soul will go
-  maxSpd: number = 3; //fastest a fish soul will go
-  maxAcc: number = 2; //fastest a fish soul can change their speed
+  minSpd: number = 2.5; //slowest a fish soul will go
+  maxSpd: number = 4; //fastest a fish soul will go
+  maxAcc: number = 2.5; //fastest a fish soul can change their speed
   turnRate: number = 0.2; //how fast fish souls will turn away from border
 
   //calculated parameters
