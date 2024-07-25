@@ -164,32 +164,29 @@ export class FishGraveyardComponent implements AfterViewInit {
       (fish: FishStatus[]) => {
         this.numSouls = fish.length;
 
-        console.log('soul count ' + this.numSouls);
+        const context = this.canvas.nativeElement.getContext('2d');
+        this.bottommargin = this.canvas.nativeElement.height - this.marginDist;
+        this.rightMargin = this.canvas.nativeElement.width - this.marginDist;
+        this.camera.x = this.canvas.nativeElement.width / 2;
+        this.camera.y = this.canvas.nativeElement.height / 2;
+        for (let i = 0; i < this.numSouls; i++) {
+          this.boids.push(
+            new Boid(
+              this.canvas.nativeElement.width,
+              this.canvas.nativeElement.height,
+              this.depth,
+              this.maxSpd
+            )
+          );
+        }
+        if (context != null) {
+          this.ctx = context;
+          this.ctx.fillStyle = 'rgb(255 255 255 / 70%)';
+          this.ctx.strokeStyle = 'rgb(255 255 255 / 100%)';
+        }
+        window.requestAnimationFrame(this.draw.bind(this));
       }
     );
-
-    const context = this.canvas.nativeElement.getContext('2d');
-    this.bottommargin = this.canvas.nativeElement.height - this.marginDist;
-    this.rightMargin = this.canvas.nativeElement.width - this.marginDist;
-    this.camera.x = this.canvas.nativeElement.width / 2;
-    this.camera.y = this.canvas.nativeElement.height / 2;
-    console.log('soul count 2 ' + this.numSouls);
-    for (let i = 0; i < this.numSouls; i++) {
-      this.boids.push(
-        new Boid(
-          this.canvas.nativeElement.width,
-          this.canvas.nativeElement.height,
-          this.depth,
-          this.maxSpd
-        )
-      );
-    }
-    if (context != null) {
-      this.ctx = context;
-      this.ctx.fillStyle = 'rgb(255 255 255 / 70%)';
-      this.ctx.strokeStyle = 'rgb(255 255 255 / 100%)';
-    }
-    window.requestAnimationFrame(this.draw.bind(this));
   }
 
   updateBoids() {
