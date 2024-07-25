@@ -13,7 +13,7 @@ export class FishService implements OnDestroy {
   private url: string[] = [
     'https://bijanrazavi.com/feed-a-fish/api/',
     'get/latest',
-    'list/dead',
+    'get/dead',
     'feed/latest',
     'status',
   ];
@@ -83,7 +83,7 @@ export class FishService implements OnDestroy {
 
   public getDeadFish() {
     this.getDeadSub = this.http
-      .get(this.url[0] + this.url[3], {
+      .get(this.url[0] + this.url[2], {
         responseType: 'text',
       })
       .pipe(
