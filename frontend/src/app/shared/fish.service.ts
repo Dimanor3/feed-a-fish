@@ -102,6 +102,8 @@ export class FishService implements OnDestroy {
         for (const r of res) {
           let createdAt: Date = new Date(r.createdAt);
 
+          console.log(r);
+
           deadFish.push(
             new FishStatus(
               r.id,
