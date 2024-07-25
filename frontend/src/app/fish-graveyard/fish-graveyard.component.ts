@@ -93,7 +93,7 @@ export class FishGraveyardComponent implements AfterViewInit, OnInit {
   leftMargin: number = this.marginDist;
   topmargin: number = this.marginDist;
 
-  numSouls: number = 1000;
+  numSouls: number = 0;
   boids: Boid[] = [];
   boidBins: Array<Array<Array<Array<Boid>>>> = [];
 
@@ -105,6 +105,8 @@ export class FishGraveyardComponent implements AfterViewInit, OnInit {
     this.deadFish = this.fishService.fishDead.subscribe(
       (fish: FishStatus[]) => {
         this.numSouls = fish.length;
+
+        console.log('soul count ' + this.numSouls);
       }
     );
   }
@@ -173,6 +175,7 @@ export class FishGraveyardComponent implements AfterViewInit, OnInit {
     this.rightMargin = this.canvas.nativeElement.width - this.marginDist;
     this.camera.x = this.canvas.nativeElement.width / 2;
     this.camera.y = this.canvas.nativeElement.height / 2;
+    console.log('soul count 2 ' + this.numSouls);
     for (let i = 0; i < this.numSouls; i++) {
       this.boids.push(
         new Boid(
