@@ -82,10 +82,10 @@ export class FishGraveyardComponent implements AfterViewInit {
 
   marginDist: number = 50; //range from border where fish souls will start to try to turn around
 
-  minSpd: number = 2.5; //slowest a fish soul will go
-  maxSpd: number = 4; //fastest a fish soul will go
-  maxAcc: number = 2.5; //fastest a fish soul can change their speed
-  turnRate: number = 0.2; //how fast fish souls will turn away from border
+  minSpd: number = 10; //slowest a fish soul will go
+  maxSpd: number = 20; //fastest a fish soul will go
+  maxAcc: number = 5; //fastest a fish soul can change their speed
+  turnRate: number = 2; //how fast fish souls will turn away from border
 
   //calculated parameters
   visionSquared: number = this.visionRange * this.visionRange;
@@ -175,6 +175,20 @@ export class FishGraveyardComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     const context = this.canvas.nativeElement.getContext('2d');
+    // for(let i = 0; i < this.numFish; i++) {
+    //   this.boids.push(
+    //     new Boid(
+    //       "a",
+    //       `rgb(${Math.random() * 255} ${Math.random() * 255} ${
+    //         Math.random() * 255
+    //       } `,
+    //       this.canvas.nativeElement.width,
+    //       this.canvas.nativeElement.height,
+    //       this.depth,
+    //       this.maxSpd
+    //     )
+    //   )
+    // }
     this.fish.forEach((fishStatus) => {
       this.boids.push(
         new Boid(
@@ -204,7 +218,7 @@ export class FishGraveyardComponent implements AfterViewInit {
 
   updateBoids() {
     this.updateBins();
-    this.boids.forEach((boid) => {
+    this.boids.sort((a,b) => b.z - a.z).forEach((boid) => {
       const vx_prev = boid.vx;
       const vy_prev = boid.vy;
       const vz_prev = boid.vz;
@@ -245,25 +259,56 @@ export class FishGraveyardComponent implements AfterViewInit {
     });
   }
 
-  draw3dPoint(x: number, y: number, z: number) {
-    return;
+  rotatePoint(x: number, y: number, z: number, xyAngle: number, xzAngle: number) {
+    
+    const sinXY = Math.sin(xyAngle)
+    const cosXY = Math.cos(xyAngle)
+    const sinXZ = Math.sin(xzAngle)
+    const cosXZ = Math.cos(xzAngle)
+    const yRot = (sinXY*x) + (cosXY*y)
+    const xyXRot = (cosXY*x) - (sinXY*y)
+    const xRot = (cosXZ*xyXRot) - (sinXZ*z)
+    const zRot = (sinXZ*xyXRot) + (cosXZ*z)
+    return new Point3d(xRot, yRot, zRot, this.camera);
   }
 
   drawBoids() {
     this.boids.forEach((boid) => {
-      this.ctx.beginPath();
+
+
+
+      const xyAngle = Math.acos(boid.vx/Math.sqrt((boid.vx*boid.vx + (boid.vy*boid.vy))))
+      const xzAngle = Math.acos(boid.vx/Math.sqrt((boid.vx*boid.vx + (boid.vz*boid.vz))))
+
       const point = new Point3d(boid.x, boid.y, boid.z, this.camera);
+      const bottomRight = this.rotatePoint(this.size, this.size, 0, xyAngle, xzAngle);
+      const topRight = this.rotatePoint(this.size, -this.size, 0, xyAngle, xzAngle)
+      const bottomLeft = this.rotatePoint(-this.size, this.size, 0, xyAngle, xzAngle)
+      const topLeft = this.rotatePoint(-this.size, -this.size, 0, xyAngle, xzAngle)
+      const direction = new Point3d(boid.x - (boid.vx*2), boid.y - (boid.vy*2), boid.z - (boid.vz*2), this.camera)
 
       this.ctx.fillStyle = `${boid.color} / ${(this.depth / boid.z) * 50}%)`;
-      this.ctx.fillText(boid.name.valueOf(), point.x, point.y - 10);
-      this.ctx.arc(
-        point.x,
-        point.y,
-        Math.abs(this.size / (boid.z / FIELD_OF_VIEW + 1)),
-        0,
-        2 * Math.PI
-      );
+      // this.ctx.arc(
+      //   point.x,
+      //   point.y,
+      //   Math.abs(this.size / (boid.z / FIELD_OF_VIEW + 1)),
+      //   0,
+      //   2 * Math.PI
+      // );
+
+      this.ctx.moveTo(point.x + topRight.x, point.y + topRight.y);
+      this.ctx.beginPath()
+      this.ctx.lineTo(point.x + topLeft.x, point.y + topLeft.y);
+      this.ctx.lineTo(point.x + bottomLeft.x, point.y + bottomLeft.y);
+      this.ctx.lineTo(point.x + bottomRight.x, point.y + bottomRight.y);
+      this.ctx.lineTo(point.x + topRight.x, point.y + topRight.y);
       this.ctx.fill();
+
+      this.ctx.fillText(boid.name.valueOf(), point.x, point.y - 10);
+      this.ctx.moveTo(point.x, point.y)
+      this.ctx.lineTo(direction.x, direction.y)
+      this.ctx.stroke()
+
     });
   }
 
