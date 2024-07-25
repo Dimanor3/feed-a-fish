@@ -2,12 +2,14 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
-  OnInit,
   ViewChild,
 } from '@angular/core';
 import { FishService } from '../shared/fish.service';
 import { Subscription } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 import { FishStatus } from '../shared/fish-status.model';
+
+export const FIELD_OF_VIEW = 500;
 
 class Point3d {
   constructor(
@@ -16,7 +18,7 @@ class Point3d {
     z: number,
     camera: { x: number; z: number; y: number }
   ) {
-    z = z / 50;
+    z = z / FIELD_OF_VIEW;
     this.x = (x - camera.x) / (z + 1) + camera.x;
     this.y = (y - camera.y) / (z + 1) + camera.y;
   }
@@ -26,11 +28,15 @@ class Point3d {
 
 class Boid {
   constructor(
+    name: String = "",
+    color: string = '',
     xmax: number = 100,
     ymax: number = 100,
     zmax: number = 100,
     vmax: number = 10
   ) {
+    this.name = name;
+    this.color = color;
     this.x = Math.random() * xmax;
     this.y = Math.random() * ymax;
     this.z = Math.random() * zmax;
@@ -38,6 +44,8 @@ class Boid {
     this.vy = Math.random() * vmax * 2 - vmax;
     this.vz = Math.random() * vmax * 2 - vmax;
   }
+  name: String;
+  color: string;
   x: number;
   y: number;
   z: number;
@@ -76,7 +84,7 @@ export class FishGraveyardComponent implements AfterViewInit {
   alignmentRate: number = 0.15; //how much fish souls want to engage in herd behavior
 
   visionRange: number = 50; //range in which fish souls will socialize and engage in herd behavior
-  protDist: number = 2; //range in which fish souls will social distance
+  protDist: number = 5; //range in which fish souls will social distance
 
   marginDist: number = 50; //range from border where fish souls will start to try to turn around
 
@@ -93,11 +101,15 @@ export class FishGraveyardComponent implements AfterViewInit {
   leftMargin: number = this.marginDist;
   topmargin: number = this.marginDist;
 
-  numSouls: number = 0;
+  fish: FishStatus[] = [];
   boids: Boid[] = [];
   boidBins: Array<Array<Array<Array<Boid>>>> = [];
 
-  constructor(private fishService: FishService) {}
+  constructor(private activatedRoute: ActivatedRoute) {
+    this.activatedRoute.data.subscribe(({deadFish}) => {
+      this.fish = deadFish
+    })
+  }
 
   draw() {
     //clear animation frame
@@ -124,25 +136,25 @@ export class FishGraveyardComponent implements AfterViewInit {
     point = new Point3d(
       this.canvas.nativeElement.width,
       this.canvas.nativeElement.height,
-      3,
+      this.depth,
       this.camera
     );
     console.log(point.x, point.y);
     this.ctx.lineTo(point.x, point.y);
-    point = new Point3d(0, this.canvas.nativeElement.height, 3, this.camera);
+    point = new Point3d(0, this.canvas.nativeElement.height, this.depth, this.camera);
     this.ctx.lineTo(point.x, point.y);
     point = new Point3d(0, this.canvas.nativeElement.height, 0, this.camera);
     this.ctx.lineTo(point.x, point.y);
     point = new Point3d(0, 0, 0, this.camera);
     this.ctx.lineTo(point.x, point.y);
-    point = new Point3d(0, 0, 3, this.camera);
+    point = new Point3d(0, 0, this.depth, this.camera);
     this.ctx.lineTo(point.x, point.y);
-    point = new Point3d(this.canvas.nativeElement.width, 0, 3, this.camera);
+    point = new Point3d(this.canvas.nativeElement.width, 0, this.depth, this.camera);
     this.ctx.lineTo(point.x, point.y);
     point = new Point3d(
       this.canvas.nativeElement.width,
       this.canvas.nativeElement.height,
-      3,
+      this.depth,
       this.camera
     );
     this.ctx.lineTo(point.x, point.y);
@@ -158,35 +170,28 @@ export class FishGraveyardComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.fishService.getDeadFish();
+    const context = this.canvas.nativeElement.getContext('2d');
+    this.fish.forEach(fishStatus => {  
+      this.boids.push(new Boid(
+        fishStatus.name,
+        `rgb(${Math.random()*255} ${Math.random()*255} ${Math.random()*255} `,
+        this.canvas.nativeElement.width,
+        this.canvas.nativeElement.height,
+        this.depth,
+        this.maxSpd
+      ))
+    })
+    this.bottommargin = this.canvas.nativeElement.height - this.marginDist;
+    this.rightMargin = this.canvas.nativeElement.width - this.marginDist;
+    this.camera.x = this.canvas.nativeElement.width / 2;
+    this.camera.y = this.canvas.nativeElement.height / 2;
 
-    this.deadFish = this.fishService.fishDead.subscribe(
-      (fish: FishStatus[]) => {
-        this.numSouls = fish.length;
-
-        const context = this.canvas.nativeElement.getContext('2d');
-        this.bottommargin = this.canvas.nativeElement.height - this.marginDist;
-        this.rightMargin = this.canvas.nativeElement.width - this.marginDist;
-        this.camera.x = this.canvas.nativeElement.width / 2;
-        this.camera.y = this.canvas.nativeElement.height / 2;
-        for (let i = 0; i < this.numSouls; i++) {
-          this.boids.push(
-            new Boid(
-              this.canvas.nativeElement.width,
-              this.canvas.nativeElement.height,
-              this.depth,
-              this.maxSpd
-            )
-          );
-        }
-        if (context != null) {
-          this.ctx = context;
-          this.ctx.fillStyle = 'rgb(255 255 255 / 70%)';
-          this.ctx.strokeStyle = 'rgb(255 255 255 / 100%)';
-        }
-        window.requestAnimationFrame(this.draw.bind(this));
-      }
-    );
+    if (context != null) {
+      this.ctx = context;
+      this.ctx.fillStyle = 'rgb(255 255 255 / 70%)';
+      this.ctx.strokeStyle = 'rgb(255 255 255 / 100%)';
+    }
+    window.requestAnimationFrame(this.draw.bind(this));
   }
 
   updateBoids() {
@@ -213,7 +218,7 @@ export class FishGraveyardComponent implements AfterViewInit {
       const AccY = boid.vy - vy_prev;
       const AccZ = boid.vz - vz_prev;
 
-      const Acc = Math.sqrt(AccX * AccX + AccY * AccY + AccZ * AccZ);
+      const Acc = Math.sqrt((AccX * AccX) + (AccY * AccY) + (AccZ * AccZ));
 
       if (Acc > this.maxAcc) {
         boid.vx = (AccX / Acc) * this.maxAcc + vx_prev;
@@ -221,7 +226,7 @@ export class FishGraveyardComponent implements AfterViewInit {
         boid.vz = (AccZ / Acc) * this.maxAcc + vz_prev;
       }
 
-      this.avoidance(boid, vx_prev, vy_prev, vz_prev);
+      this.avoidance(boid);
 
       //limit speed
       this.limitSpeed(boid);
@@ -240,10 +245,13 @@ export class FishGraveyardComponent implements AfterViewInit {
     this.boids.forEach((boid) => {
       this.ctx.beginPath();
       const point = new Point3d(boid.x, boid.y, boid.z, this.camera);
+
+      this.ctx.fillStyle = `${boid.color} / ${(this.depth/boid.z)*50}%)`;
+      this.ctx.fillText(boid.name.valueOf(), point.x, point.y - 10)
       this.ctx.arc(
         point.x,
         point.y,
-        Math.abs(this.size / (boid.z / 50 + 1)),
+        Math.abs(this.size / (boid.z / FIELD_OF_VIEW + 1)),
         0,
         2 * Math.PI
       );
@@ -278,17 +286,6 @@ export class FishGraveyardComponent implements AfterViewInit {
       protected: [],
       vision: [],
     };
-    // this.boids.forEach(neighborPotential => {
-    //   const dx = boid.x - neighborPotential.x
-    //   const dy = boid.y - neighborPotential.y
-    //   const sqDist = (dx*dx) + (dy*dy)
-    //   if(sqDist < this.protDistSquared) {
-    //     neighbors.protected.push(neighborPotential)
-    //   } else if (sqDist < this.visionSquared){
-    //     neighbors.vision.push(neighborPotential)
-    //   }
-    // })
-
     for (let i = boid.bin.x - 1; i < boid.bin.x + 1; i++) {
       for (let j = boid.bin.y - 1; j < boid.bin.y + 1; j++) {
         for (let k = boid.bin.z - 1; k < boid.bin.z + 1; k++) {
@@ -301,7 +298,7 @@ export class FishGraveyardComponent implements AfterViewInit {
               const dx = boid.x - potNeighbor.x;
               const dy = boid.y - potNeighbor.y;
               const dz = boid.z - potNeighbor.z;
-              const sqDist = dx * dx + dy * dy + dz * dz;
+              const sqDist = (dx * dx) + (dy * dy) + (dz * dz);
               if (sqDist < this.protDistSquared) {
                 neighbors.protected.push(potNeighbor);
               } else if (sqDist < this.visionSquared) {
@@ -373,15 +370,15 @@ export class FishGraveyardComponent implements AfterViewInit {
     }
   }
 
-  avoidance(boid: Boid, vx0: number, vy0: number, vz0: number) {
-    if (boid.x < this.leftMargin) boid.vx = this.turnRate + vx0;
-    if (boid.x > this.rightMargin) boid.vx = vx0 - this.turnRate;
+  avoidance(boid: Boid) {
+    if (boid.x < this.leftMargin) boid.vx += this.turnRate;
+    if (boid.x > this.rightMargin) boid.vx -= this.turnRate;
 
-    if (boid.y < this.topmargin) boid.vy = this.turnRate + vy0;
-    if (boid.y > this.bottommargin) boid.vy = vy0 - this.turnRate;
+    if (boid.y < this.topmargin) boid.vy += this.turnRate;
+    if (boid.y > this.bottommargin) boid.vy -= this.turnRate;
 
-    if (boid.z < 0) boid.vz = this.turnRate + vz0;
-    if (boid.z > this.depth) boid.vz = vz0 - this.turnRate;
+    if (boid.z < this.marginDist) boid.vz += this.turnRate;
+    if (boid.z > this.depth - this.marginDist) boid.vz -= this.turnRate;
   }
 
   limitSpeed(boid: Boid) {

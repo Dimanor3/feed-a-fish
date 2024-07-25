@@ -1,0 +1,8 @@
+{
+    "/api": {
+        "target": "https://bijanrazavi.com/feed-a-fish",
+        "secure": false,
+        "changeOrigin": true,
+        "logLevel": "info"
+    }
+}

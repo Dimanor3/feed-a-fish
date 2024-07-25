@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { fishResolveResolver } from './shared/fish-resolve.resolver';
 
 export const routes: Routes = [
   {
@@ -11,6 +12,7 @@ export const routes: Routes = [
   },
   {
     path: 'fish-graveyard',
+    resolve: {deadFish: fishResolveResolver},
     loadComponent: () =>
       import('./fish-graveyard/fish-graveyard.component').then(
         (mod) => mod.FishGraveyardComponent
