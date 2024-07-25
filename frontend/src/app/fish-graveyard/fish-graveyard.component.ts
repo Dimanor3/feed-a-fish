@@ -1,9 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  ViewChild,
-} from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { FishService } from '../shared/fish.service';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
@@ -28,7 +23,7 @@ class Point3d {
 
 class Boid {
   constructor(
-    name: String = "",
+    name: String = '',
     color: string = '',
     xmax: number = 100,
     ymax: number = 100,
@@ -84,7 +79,7 @@ export class FishGraveyardComponent implements AfterViewInit {
   alignmentRate: number = 0.15; //how much fish souls want to engage in herd behavior
 
   visionRange: number = 50; //range in which fish souls will socialize and engage in herd behavior
-  protDist: number = 5; //range in which fish souls will social distance
+  protDist: number = 10; //range in which fish souls will social distance
 
   marginDist: number = 50; //range from border where fish souls will start to try to turn around
 
@@ -106,9 +101,9 @@ export class FishGraveyardComponent implements AfterViewInit {
   boidBins: Array<Array<Array<Array<Boid>>>> = [];
 
   constructor(private activatedRoute: ActivatedRoute) {
-    this.activatedRoute.data.subscribe(({deadFish}) => {
-      this.fish = deadFish
-    })
+    this.activatedRoute.data.subscribe(({ deadFish }) => {
+      this.fish = deadFish;
+    });
   }
 
   draw() {
@@ -141,7 +136,12 @@ export class FishGraveyardComponent implements AfterViewInit {
     );
     console.log(point.x, point.y);
     this.ctx.lineTo(point.x, point.y);
-    point = new Point3d(0, this.canvas.nativeElement.height, this.depth, this.camera);
+    point = new Point3d(
+      0,
+      this.canvas.nativeElement.height,
+      this.depth,
+      this.camera
+    );
     this.ctx.lineTo(point.x, point.y);
     point = new Point3d(0, this.canvas.nativeElement.height, 0, this.camera);
     this.ctx.lineTo(point.x, point.y);
@@ -149,7 +149,12 @@ export class FishGraveyardComponent implements AfterViewInit {
     this.ctx.lineTo(point.x, point.y);
     point = new Point3d(0, 0, this.depth, this.camera);
     this.ctx.lineTo(point.x, point.y);
-    point = new Point3d(this.canvas.nativeElement.width, 0, this.depth, this.camera);
+    point = new Point3d(
+      this.canvas.nativeElement.width,
+      0,
+      this.depth,
+      this.camera
+    );
     this.ctx.lineTo(point.x, point.y);
     point = new Point3d(
       this.canvas.nativeElement.width,
@@ -171,16 +176,20 @@ export class FishGraveyardComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     const context = this.canvas.nativeElement.getContext('2d');
-    this.fish.forEach(fishStatus => {  
-      this.boids.push(new Boid(
-        fishStatus.name,
-        `rgb(${Math.random()*255} ${Math.random()*255} ${Math.random()*255} `,
-        this.canvas.nativeElement.width,
-        this.canvas.nativeElement.height,
-        this.depth,
-        this.maxSpd
-      ))
-    })
+    this.fish.forEach((fishStatus) => {
+      this.boids.push(
+        new Boid(
+          fishStatus.name,
+          `rgb(${Math.random() * 255} ${Math.random() * 255} ${
+            Math.random() * 255
+          } `,
+          this.canvas.nativeElement.width,
+          this.canvas.nativeElement.height,
+          this.depth,
+          this.maxSpd
+        )
+      );
+    });
     this.bottommargin = this.canvas.nativeElement.height - this.marginDist;
     this.rightMargin = this.canvas.nativeElement.width - this.marginDist;
     this.camera.x = this.canvas.nativeElement.width / 2;
@@ -218,7 +227,7 @@ export class FishGraveyardComponent implements AfterViewInit {
       const AccY = boid.vy - vy_prev;
       const AccZ = boid.vz - vz_prev;
 
-      const Acc = Math.sqrt((AccX * AccX) + (AccY * AccY) + (AccZ * AccZ));
+      const Acc = Math.sqrt(AccX * AccX + AccY * AccY + AccZ * AccZ);
 
       if (Acc > this.maxAcc) {
         boid.vx = (AccX / Acc) * this.maxAcc + vx_prev;
@@ -246,8 +255,8 @@ export class FishGraveyardComponent implements AfterViewInit {
       this.ctx.beginPath();
       const point = new Point3d(boid.x, boid.y, boid.z, this.camera);
 
-      this.ctx.fillStyle = `${boid.color} / ${(this.depth/boid.z)*50}%)`;
-      this.ctx.fillText(boid.name.valueOf(), point.x, point.y - 10)
+      this.ctx.fillStyle = `${boid.color} / ${(this.depth / boid.z) * 50}%)`;
+      this.ctx.fillText(boid.name.valueOf(), point.x, point.y - 10);
       this.ctx.arc(
         point.x,
         point.y,
@@ -298,7 +307,7 @@ export class FishGraveyardComponent implements AfterViewInit {
               const dx = boid.x - potNeighbor.x;
               const dy = boid.y - potNeighbor.y;
               const dz = boid.z - potNeighbor.z;
-              const sqDist = (dx * dx) + (dy * dy) + (dz * dz);
+              const sqDist = dx * dx + dy * dy + dz * dz;
               if (sqDist < this.protDistSquared) {
                 neighbors.protected.push(potNeighbor);
               } else if (sqDist < this.visionSquared) {
