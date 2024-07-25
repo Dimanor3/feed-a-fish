@@ -93,13 +93,9 @@ export class FishService implements OnDestroy {
         })
       )
       .subscribe((response) => {
-        console.log('testing: ' + response);
-
         const res: FishStatus[] = JSON.parse(response);
 
         let deadFish: FishStatus[] = [];
-
-        console.log('super test: ' + response);
 
         for (const r of res) {
           let createdAt: Date = new Date(r.createdAt);

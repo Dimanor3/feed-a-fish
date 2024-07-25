@@ -104,7 +104,7 @@ export class FishGraveyardComponent implements AfterViewInit, OnInit {
 
     this.deadFish = this.fishService.fishDead.subscribe(
       (fish: FishStatus[]) => {
-        console.log(fish);
+        this.numSouls = fish.length;
       }
     );
   }
