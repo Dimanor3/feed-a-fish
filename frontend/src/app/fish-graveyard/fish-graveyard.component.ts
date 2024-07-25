@@ -1,4 +1,13 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import { FishService } from '../shared/fish.service';
+import { Subscription } from 'rxjs';
+import { FishStatus } from '../shared/fish-status.model';
 
 class Point3d {
   constructor(
@@ -49,7 +58,9 @@ class Boid {
   templateUrl: './fish-graveyard.component.html',
   styleUrl: './fish-graveyard.component.css',
 })
-export class FishGraveyardComponent implements AfterViewInit {
+export class FishGraveyardComponent implements AfterViewInit, OnInit {
+  deadFish: Subscription = null as any;
+
   @ViewChild('canvas')
   canvas!: ElementRef<HTMLCanvasElement>;
   ctx!: CanvasRenderingContext2D;
@@ -86,7 +97,17 @@ export class FishGraveyardComponent implements AfterViewInit {
   boids: Boid[] = [];
   boidBins: Array<Array<Array<Array<Boid>>>> = [];
 
-  constructor() {}
+  constructor(private fishService: FishService) {}
+
+  ngOnInit() {
+    this.fishService.getDeadFish();
+
+    this.deadFish = this.fishService.fishDead.subscribe(
+      (fish: FishStatus[]) => {
+        console.log(fish);
+      }
+    );
+  }
 
   draw() {
     //clear animation frame

@@ -15,6 +15,7 @@ export class FishService implements OnDestroy {
     'get/latest',
     'list/dead',
     'feed/latest',
+    'status',
   ];
   private getFishSub: Subscription = null as any;
   private getDeadSub: Subscription = null as any;
@@ -23,6 +24,7 @@ export class FishService implements OnDestroy {
   private fishImage = new Subject<String>();
   fishChanged = new Subject<FishStatus>();
   fishKilled = new Subject<FishStatus>();
+  fishDead = new Subject<FishStatus[]>();
 
   constructor(private http: HttpClient) {}
 
@@ -81,7 +83,9 @@ export class FishService implements OnDestroy {
 
   public getDeadFish() {
     this.getDeadSub = this.http
-      .get(this.url[0] + this.url[2])
+      .get(this.url[0] + this.url[3], {
+        responseType: 'text',
+      })
       .pipe(
         catchError(this.handleError),
         tap((resData) => {
@@ -90,6 +94,34 @@ export class FishService implements OnDestroy {
       )
       .subscribe((response) => {
         console.log(response);
+
+        const res: FishStatus[] = JSON.parse(response);
+
+        let deadFish: FishStatus[] = [];
+
+        for (const r of res) {
+          let createdAt: Date = new Date(r.createdAt);
+
+          deadFish.push(
+            new FishStatus(
+              r.id,
+              r.name,
+              createdAt,
+              r.parentFishId,
+              r.mood,
+              r.age,
+              r.alive,
+              r.weight,
+              r.minWeight,
+              r.maxWeight,
+              r.currentHungerLevel,
+              r.gainWeightHungerLevel,
+              r.loseWeightHungerLevel
+            )
+          );
+        }
+
+        this.fishDead.next(deadFish);
       });
   }
 
@@ -105,7 +137,7 @@ export class FishService implements OnDestroy {
     this.feedFishSub = this.http
       .get(this.url[0] + this.url[3], {
         responseType: 'text',
-        params: params
+        params: params,
       })
       .pipe(
         catchError(this.handleError),
@@ -125,15 +157,20 @@ export class FishService implements OnDestroy {
 
   public getFishImage(name: String, id: String): Observable<String> {
     this.fishImageSub = this.http
-            .get("https://sharpfish.billkarnavas.com/" + name + "-" + id, { responseType: 'text' })
-            .pipe(catchError(this.handleError),
-              tap((resData) => {
-                // console.log(resData);
-              })
-            )
-            .subscribe((res) => {
-              this.fishImage.next(res.toString().replace("<?xml version=\"1.0\" standalone=\"no\"?> ", ''));
-            });
+      .get('https://sharpfish.billkarnavas.com/' + name + '-' + id, {
+        responseType: 'text',
+      })
+      .pipe(
+        catchError(this.handleError),
+        tap((resData) => {
+          // console.log(resData);
+        })
+      )
+      .subscribe((res) => {
+        this.fishImage.next(
+          res.toString().replace('<?xml version="1.0" standalone="no"?> ', '')
+        );
+      });
 
     return this.fishImage.asObservable();
   }
