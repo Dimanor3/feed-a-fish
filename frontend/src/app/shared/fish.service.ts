@@ -11,7 +11,7 @@ import { FishStatus } from './fish-status.model';
 @Injectable({ providedIn: 'root' })
 export class FishService implements OnDestroy {
   private url: string[] = [
-    '/api/',
+    '/feed-a-fish/api/',
     'get/latest',
     'get/dead',
     'feed/latest',
